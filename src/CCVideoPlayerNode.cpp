@@ -245,24 +245,60 @@ public:
         avformat_close_input(&fmt_ctx);
         sws_free_context(&sws_ctx);
         av_freep(&rgb_buffer);
-        CC_SAFE_RELEASE(cc_texture);
+
+        CC_SAFE_DELETE(cc_texture);
 
     }
 
 
     bool init() override {
 
-        const char* filename = "C:/Users/79215/Desktop/sample.mp4";
+        // const char* filename = "C:/Users/79215/Desktop/sample.mp4";
 
-        fmt_ctx = nullptr;
-        if (avformat_open_input(&fmt_ctx, filename, nullptr, nullptr) < 0) {
-            std::cerr << "Could not open file\n";
-            return true;
+        // fmt_ctx = nullptr;
+        // if (avformat_open_input(&fmt_ctx, filename, nullptr, nullptr) < 0) {
+        //     std::cerr << "Could not open file\n";
+        //     return true;
+        // }
+        // if (avformat_find_stream_info(fmt_ctx, nullptr) < 0) {
+        //     std::cerr << "Could not find stream info\n";
+        //     return true;
+        // }
+        // video_stream_index = av_find_best_stream(fmt_ctx, AVMEDIA_TYPE_VIDEO, -1, -1, nullptr, 0);
+        // if (video_stream_index < 0) {
+        //     std::cerr << "No video stream found\n";
+        //     return true;
+        // }
+        // AVStream* video_stream = fmt_ctx->streams[video_stream_index];
+        // const AVCodec* codec = avcodec_find_decoder(video_stream->codecpar->codec_id);
+        // if (!codec) {
+        //     std::cerr << "Unsupported codec\n";
+        //     return true;
+        // }
+        // codec_ctx = avcodec_alloc_context3(codec);
+        // avcodec_parameters_to_context(codec_ctx, video_stream->codecpar);
+        // if (avcodec_open2(codec_ctx, codec, nullptr) < 0) {
+        //     std::cerr << "Could not open codec\n";
+        //     return true;
+        // }
+
+        avdevice_register_all();
+
+        const AVInputFormat* input_fmt = av_find_input_format("dshow");
+        AVDictionary* options = nullptr;
+        const char* device_name = "video=Live Streamer CAM 313";
+
+        if (avformat_open_input(&fmt_ctx, device_name, input_fmt, &options) != 0) {
+            std::cerr << "Не удалось открыть устройство!" << std::endl;
+            return false;
         }
+
         if (avformat_find_stream_info(fmt_ctx, nullptr) < 0) {
-            std::cerr << "Could not find stream info\n";
-            return true;
+            std::cerr << "Не удалось получить информацию о потоке!" << std::endl;
+            return false;
         }
+
+
         video_stream_index = av_find_best_stream(fmt_ctx, AVMEDIA_TYPE_VIDEO, -1, -1, nullptr, 0);
         if (video_stream_index < 0) {
             std::cerr << "No video stream found\n";
@@ -280,6 +316,9 @@ public:
             std::cerr << "Could not open codec\n";
             return true;
         }
+
+        fmt_ctx->flags |= AVFMT_FLAG_NONBLOCK; // dont block to 24 frames
+
 
         sws_ctx = sws_getContext(codec_ctx->width, codec_ctx->height, codec_ctx->pix_fmt,
             codec_ctx->width, codec_ctx->height, AV_PIX_FMT_RGB24, SWS_BILINEAR, nullptr, nullptr, nullptr);
@@ -316,11 +355,12 @@ public:
 
         
         return CCSprite::initWithTexture(cc_texture);
+        // return CCSprite::init();
     }
 
 
     void visit() override {
-
+        
         if (av_read_frame(fmt_ctx, pkt) >= 0) {
             if (pkt->stream_index == video_stream_index) {
                 if (avcodec_send_packet(codec_ctx, pkt) == 0) {
@@ -349,7 +389,7 @@ public:
                         );
 
                         
-                        // setTexture(cc_texture);
+                        setTexture(cc_texture);
                         // setTextureRect(CCRect(0,0,480,270));
                         updateBlendFunc();
                     }
