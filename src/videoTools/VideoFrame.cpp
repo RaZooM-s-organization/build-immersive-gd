@@ -199,11 +199,12 @@ class $modify(MenuLayer) {
         if (!MenuLayer::init()) return false;
 
         auto vp = VideoPlayer::create();
-        vp->setContentSize({480, 270});
+        // vp->setContentSize({480, 270});
         vp->setPosition(CCDirector::get()->getWinSize() / 2);
         this->addChild(vp);
 
 
         return true;
     }
+
 };
