@@ -66,15 +66,23 @@ enum class ClippingMode {
 };
 
 
-class VideoPlayer : public CCClippingNode {
+class VideoPlayer : public CCNode {
 protected:
     VideoFrame* m_videoFrame;
+    ClippingMode m_mode;
+    CCClippingNode* m_clippingNode;
 
 public:
 
     static VideoPlayer* create(float qualityMultiplier = 1.f, ClippingMode clippingMode = ClippingMode::Fit);
 
     bool init(float qualityMultiplier, ClippingMode clippingMode);
-    void updateVideoFrame(float qualityMultiplier);
+    // void updateOutputVideoQuality(float qualityMultiplier);
     void setContentSize(CCSize const& contentSize) override;
+
+private:
+
+    void updateFrameScalePos();
+
+
 };

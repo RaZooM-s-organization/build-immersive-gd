@@ -169,7 +169,7 @@ void VideoFrame::visit() {
                         sws_scale(sws_ctx, frame->data, frame->linesize, 0,
                             codec_ctx->height, rgb_frame->data, rgb_frame->linesize);
 
-                        bool success = cc_texture->initWithData(
+                        cc_texture->initWithData(
                             rgb_frame->data[0],
                             kCCTexture2DPixelFormat_RGB888,
                             output_w,
@@ -198,8 +198,8 @@ class $modify(MenuLayer) {
     bool init() {
         if (!MenuLayer::init()) return false;
 
-        auto vp = VideoFrame::create();
-        // vp->setContentSize({480, 270});
+        auto vp = VideoPlayer::create();
+        vp->setContentSize({480, 270});
         vp->setPosition(CCDirector::get()->getWinSize() / 2);
         this->addChild(vp);
 
