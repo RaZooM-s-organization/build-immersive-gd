@@ -51,7 +51,12 @@ public:
 
     bool init(float quality_multiplier);
     void visit() override;
+    bool isOk();
 
+
+private:
+
+    Result<void, std::string> setupFFMPEG(const char* device_name, float quality_multiplier);
     
 };
 
@@ -70,6 +75,6 @@ public:
     static VideoPlayer* create(float qualityMultiplier = 1.f, ClippingMode clippingMode = ClippingMode::Fit);
 
     bool init(float qualityMultiplier, ClippingMode clippingMode);
-    void createOrReplaceVideoPlayer(float qualityMultiplier);
+    void updateVideoFrame(float qualityMultiplier);
     void setContentSize(CCSize const& contentSize) override;
 };
