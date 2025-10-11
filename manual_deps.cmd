@@ -69,14 +69,14 @@ if not exist "!folder_name!\resources\binaries\win" (
 )
 echo Path resources/binaries/win successfully created in !folder_name!
 
-REM Copy all .dll files from ./lib/ffmpeg-master-latest-win64-gpl-shared/bin to created path
-echo Copying .dll files from ./lib/ffmpeg-master-latest-win64-gpl-shared/bin to !folder_name!\resources\binaries\win...
-if not exist "lib\ffmpeg-master-latest-win64-gpl-shared\bin\*.dll" (
-    echo No .dll files found in lib\ffmpeg-master-latest-win64-gpl-shared\bin folder
+REM Copy all .dll files from ./lib/ffmpeg/bin to created path
+echo Copying .dll files from ./lib/ffmpeg/bin to !folder_name!\resources\binaries\win...
+if not exist "lib\ffmpeg\bin\*.dll" (
+    echo No .dll files found in lib\ffmpeg\bin folder
     exit /b 8
 )
 
-copy "lib\ffmpeg-master-latest-win64-gpl-shared\bin\*.dll" "!folder_name!\resources\binaries\win\" /Y >nul
+copy "lib\ffmpeg\bin\*.dll" "!folder_name!\resources\binaries\win\" /Y >nul
 if !errorlevel! neq 0 (
     echo Error copying .dll files
     exit /b 7

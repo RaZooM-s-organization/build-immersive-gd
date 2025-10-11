@@ -29,7 +29,7 @@ add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
 # add ffmpeg packages
 
-set(FFMPEG_DIR ${CMAKE_SOURCE_DIR}/lib/ffmpeg-master-latest-win64-gpl-shared)
+set(FFMPEG_DIR ${CMAKE_SOURCE_DIR}/lib/ffmpeg)
 
 find_library(AVCODEC_LIB NAMES avcodec PATHS ${FFMPEG_DIR}/lib)
 find_library(AVDEVICE_LIB NAMES avdevice PATHS ${FFMPEG_DIR}/lib)
