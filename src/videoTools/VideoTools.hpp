@@ -11,9 +11,11 @@ extern "C" {
 #include <libavutil/imgutils.h>
 }
 
+// todo: seems that I don't use avfilter, so I can remove that 24MB dll from resources
+// (and the same thing for other unused dlls)
+
 
 #include <Geode/Geode.hpp>
-#include <Geode/modify/MenuLayer.hpp>
 
 using namespace geode::prelude;
 

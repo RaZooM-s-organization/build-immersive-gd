@@ -191,20 +191,3 @@ void VideoFrame::visit() {
 bool VideoFrame::isOk() {
     return correctly_initialized;
 }
-
-
-// todo: rm this
-class $modify(MenuLayer) {
-    bool init() {
-        if (!MenuLayer::init()) return false;
-
-        auto vp = VideoPlayer::create();
-        // vp->setContentSize({480, 270});
-        vp->setPosition(CCDirector::get()->getWinSize() / 2);
-        this->addChild(vp);
-
-
-        return true;
-    }
-
-};

@@ -1,8 +1,10 @@
+#pragma once
+
+#include "../utils/ChoiceNode.hpp"
+
 #include <Geode/Geode.hpp>
 
 using namespace geode::prelude;
-
-#include <Geode/ui/GeodeUI.hpp>
 
 
 class VideoSettingsPopup : public Popup<int> {
@@ -42,6 +44,15 @@ public:
             ),
             Anchor::Bottom
         );
+
+
+        auto mc = ChoiceNode::create(100, {
+            {1, "1111111"},
+            {2, "22222222222222"},
+            {3, "3333333333333333333"},
+            {4, "44"}
+        }, [](int i){log::debug("choice = {}", i);});
+        m_mainLayer->addChildAtPosition(mc, Anchor::Center);
         
 
         setID("video-settings-popup"_spr);
