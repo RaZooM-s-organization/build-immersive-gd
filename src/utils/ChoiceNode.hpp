@@ -16,7 +16,7 @@ protected:
 public:
 
     static ChoiceNode* create(
-        float width,
+        float width, const char* title,
         const std::vector<std::pair<int, std::string>> &choice,
         std::function<void(int)> callback,
         std::optional<int> defaultChoiceTag = std::nullopt, 
@@ -26,7 +26,7 @@ public:
 protected:
 
     bool init(
-        float width,
+        float width, const char* title,
         const std::vector<std::pair<int, std::string>> &choice,
         std::function<void(int)> callback,
         std::optional<int> defaultChoiceTag, 

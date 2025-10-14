@@ -1,14 +1,14 @@
 #include "ChoiceNode.hpp"
 
 ChoiceNode* ChoiceNode::create(
-    float width,
+    float width, const char* title,
     const std::vector<std::pair<int, std::string>> &choice,
     std::function<void(int)> callback,
     std::optional<int> defaultChoiceTag, 
     bool triggerCallback
 ) {
     auto ret = new ChoiceNode;
-    if (ret && ret->init(width, choice, callback, defaultChoiceTag, triggerCallback)) {
+    if (ret && ret->init(width, title, choice, callback, defaultChoiceTag, triggerCallback)) {
         ret->autorelease();
         return ret;
     }
@@ -32,7 +32,7 @@ void ChoiceNode::updateArrows() {
 }
 
 bool ChoiceNode::init(
-    float width,
+    float width, const char* title,
     const std::vector<std::pair<int, std::string>> &choice,
     std::function<void(int)> callback,
     std::optional<int> defaultChoiceTag, 
@@ -43,6 +43,11 @@ bool ChoiceNode::init(
     setContentSize(CCSizeMake(width, 30));
     m_labels = CCArray::create();
     m_callback = callback;
+
+    if (!title) title = "";
+    auto titleLbl = CCLabelBMFont::create(title, "goldFont.fnt");
+    titleLbl->setScale(0.6);
+    addChildAtPosition(titleLbl, Anchor::Top, ccp(0, 15));
 
     for (auto& [tag, str] : choice) {
         auto lab = CCLabelBMFont::create(str.c_str(), "bigFont.fnt");
