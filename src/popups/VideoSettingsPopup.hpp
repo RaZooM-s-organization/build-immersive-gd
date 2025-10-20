@@ -69,7 +69,22 @@ public:
 
 
     void setupCameraPreview() {
-        m_videoplayer = VideoPlayer::create(1.f, ClippingMode::Crop);
+        m_videoplayer = VideoPlayer::create();
+
+        auto cameraMan = std::make_shared<CameraMan>("Live Streamer CAM 313");
+        auto res = cameraMan->setupFFMPEG();
+        if (res.isOk()) {
+            auto frame = VideoFrame::create(cameraMan);
+    
+            m_videoplayer->addFrame(frame);
+        } else {
+            log::error("Can't setup the camera:");
+            log::error("{}", res.unwrapErr());
+        }
+
+
+
+
         auto winSz = CCDirector::get()->getWinSize();
         float ratio = winSz.height / winSz.width;
         // width is fixed, height is adaptive

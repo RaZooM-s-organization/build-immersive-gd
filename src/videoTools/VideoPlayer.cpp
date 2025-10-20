@@ -1,9 +1,9 @@
 #include "VideoTools.hpp"
 
 
-VideoPlayer* VideoPlayer::create(float qualityMultiplier, ClippingMode clippingMode) {
+VideoPlayer* VideoPlayer::create(ClippingMode clippingMode) {
     auto ret = new VideoPlayer;
-    if (ret && ret->init(qualityMultiplier, clippingMode)) {
+    if (ret && ret->init(clippingMode)) {
         ret->autorelease();
         return ret;
     }
@@ -11,23 +11,19 @@ VideoPlayer* VideoPlayer::create(float qualityMultiplier, ClippingMode clippingM
     return nullptr;
 }
 
-bool VideoPlayer::init(float qualityMultiplier, ClippingMode clippingMode) {
+bool VideoPlayer::init(ClippingMode clippingMode) {
     if (!CCNode::init()) return false;
 
     m_mode = clippingMode;
-    m_videoFrame = VideoFrame::create(qualityMultiplier);
-
     
     m_clippingNode = CCClippingNode::create();
-    m_clippingNode->addChild(m_videoFrame);
     m_clippingNode->setStencil(CCSprite::create("pixel.png"));
     m_clippingNode->setAlphaThreshold(0.7f);
     m_clippingNode->setAnchorPoint({0.5,0.5});
-    addChild(m_clippingNode);
 
+    addChild(m_clippingNode);
     setAnchorPoint({0.5,0.5});
     setContentSize({100, 100});
-
     return true;
 }
 
@@ -37,7 +33,7 @@ bool VideoPlayer::init(float qualityMultiplier, ClippingMode clippingMode) {
 // }
 
 
-void VideoPlayer::updateFrameScalePos() {
+void VideoPlayer::updateFramesScalePos() {
     // clipping node pos and content size
     m_clippingNode->setPosition(getContentSize() / 2);
     m_clippingNode->setContentSize(getContentSize());
@@ -49,16 +45,24 @@ void VideoPlayer::updateFrameScalePos() {
     stencil->setScaleY(getContentHeight() / stencil->getContentHeight());
 
     // frame position ans scale
-    float ww = getContentWidth() / m_videoFrame->getContentWidth();
-    float hh = getContentHeight() / m_videoFrame->getContentHeight();
-    float scale = m_mode == ClippingMode::Fit ? std::min(ww, hh) : std::max(ww, hh);
-    m_videoFrame->setPosition(getContentSize() / 2);
-    m_videoFrame->setScale(scale);
+    for (auto child : m_clippingNode->getChildrenExt()) {
+        float ww = getContentWidth() / child->getContentWidth();
+        float hh = getContentHeight() / child->getContentHeight();
+        float scale = m_mode == ClippingMode::Fit ? std::min(ww, hh) : std::max(ww, hh);
+        child->setPosition(getContentSize() / 2);
+        child->setScale(scale);
+    }
+}
+
+
+void VideoPlayer::addFrame(CCSprite* frame) {
+    m_clippingNode->addChild(frame);
+    updateFramesScalePos();
 }
 
 
 void VideoPlayer::setContentSize(CCSize const& contentSize) {
     CCNode::setContentSize(contentSize);
-    updateFrameScalePos();
+    updateFramesScalePos();
 }
 
