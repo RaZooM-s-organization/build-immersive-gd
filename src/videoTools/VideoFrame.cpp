@@ -1,4 +1,4 @@
-#include "VideoTools.hpp"
+#include "VideoFrame.hpp"
 
 
 // TODO: ffmpeg dlls in Geometry Dash folder
@@ -44,12 +44,6 @@ bool VideoFrame::init(std::shared_ptr<CameraMan> cameraMan) {
 
     m_cameraMan = cameraMan;
 
-    if (!m_cameraMan) {
-        if (!CCSprite::initWithSpriteFrameName("diffIcon_00_btn_001.png")) return false;
-        setOpacity(90);
-        return true;
-    }
-
     int outWidth, outHeight;
     m_cameraMan->getFrameSizeInPix(&outWidth, &outHeight);
 
@@ -72,15 +66,12 @@ bool VideoFrame::init(std::shared_ptr<CameraMan> cameraMan) {
     }
 
     setContentSize(CCSizeMake(outWidth, outHeight) * sizeMultiplier);
-    m_initializedCorrectly = true;
     return true;
 }
 
 
 void VideoFrame::visit() {
     
-    if (!m_initializedCorrectly) return CCSprite::visit();
-
     auto frame = m_cameraMan->getPendingFrame();
 
     if (frame.m_id != m_currentFrameId && frame.m_data.get() != nullptr) {

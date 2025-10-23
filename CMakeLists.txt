@@ -39,7 +39,19 @@ find_library(AVUTIL_LIB NAMES avutil PATHS ${FFMPEG_DIR}/lib)
 find_library(SWRESAMPLE_LIB NAMES swresample PATHS ${FFMPEG_DIR}/lib)
 find_library(SWSCALE_LIB NAMES swscale PATHS ${FFMPEG_DIR}/lib)
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${FFMPEG_DIR}/include)
+# add openCV and onnx packages
+
+find_package(OpenCV REQUIRED)
+
+find_library(ONNX_RUNTIME_LIB NAMES onnxruntime PATHS ${CMAKE_SOURCE_DIR}/lib/onnxruntime/lib)
+
+# target include
+
+target_include_directories(${PROJECT_NAME} PRIVATE 
+    ${FFMPEG_DIR}/include 
+    lib/onnxruntime/include 
+    ${OpenCV_INCLUDE_DIRS}
+)
 
 target_link_libraries(${PROJECT_NAME} 
     ${AVCODEC_LIB}
@@ -49,6 +61,10 @@ target_link_libraries(${PROJECT_NAME}
     ${AVUTIL_LIB}
     ${SWRESAMPLE_LIB}
     ${SWSCALE_LIB}
+
+    ${ONNX_RUNTIME_LIB}
+    
+    ${OpenCV_LIBRARIES}
 )
 
 setup_geode_mod(${PROJECT_NAME})

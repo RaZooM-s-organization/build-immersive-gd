@@ -1,4 +1,4 @@
-#include "VideoTools.hpp"
+#include "VideoPlayer.hpp"
 
 
 VideoPlayer* VideoPlayer::create(ClippingMode clippingMode) {
@@ -55,9 +55,14 @@ void VideoPlayer::updateFramesScalePos() {
 }
 
 
-void VideoPlayer::addFrame(CCSprite* frame) {
+void VideoPlayer::addFrame(CCNode* frame) {
     m_clippingNode->addChild(frame);
     updateFramesScalePos();
+}
+
+
+void VideoPlayer::removeFrame(CCNode* frame) {
+    m_clippingNode->removeChild(frame);
 }
 
 

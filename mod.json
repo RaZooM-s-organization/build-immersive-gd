@@ -13,5 +13,10 @@
 	"description": "ghjkl",
 	"dependencies": {
 		"geode.node-ids": ">=v1.20.0"
+	},
+	"resources": {
+		"files": [
+			"resources/models/hrnet_coco_w32_256x192.onnx"
+		]
 	}
 }

@@ -1,4 +1,4 @@
-#include "VideoTools.hpp"
+#include "CameraMan.hpp"
 
 
 CameraMan::CameraMan(std::string deviceName, float qualityMultiplier) :
@@ -8,19 +8,16 @@ CameraMan::CameraMan(std::string deviceName, float qualityMultiplier) :
 
 
 CameraMan::~CameraMan() {
-    
     if (m_secondThread.joinable()) {
         m_secondThreadRunning = false;
         m_secondThread.join();
     }
-    
     avformat_close_input(&fmt_ctx);
     av_frame_free(&frame);
     av_frame_free(&rgb_frame);
     av_packet_free(&pkt);
     avcodec_free_context(&codec_ctx);
     sws_free_context(&sws_ctx);
-
 }
 
 
@@ -99,7 +96,6 @@ Result<void, std::string> CameraMan::setupFFMPEG() {
     
     m_rgbBufSz = av_image_get_buffer_size(AV_PIX_FMT_RGB24, m_outputW, m_outputH, 1);
 
-    // run 2nd thread
     m_secondThread = std::thread(&CameraMan::processVideoStream, this);
     
     return Ok();
@@ -112,6 +108,7 @@ void CameraMan::processVideoStream() {
     while(m_secondThreadRunning) {
         // avg is ~1.8 ms on 640x480, x1 multiplier
         bool success = processFrame();
+        std::this_thread::yield();
     }
 }
 
