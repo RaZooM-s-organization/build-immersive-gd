@@ -17,13 +17,10 @@ protected:
     std::mutex m_latestPoseOwnership{};
     uint32_t m_latestFrameId{};
 
+    std::wstring m_modelFilepath{};
     Ort::Session m_session{nullptr};
-    std::optional<Ort::AllocatedStringPtr> inputNamePtr{};
-    std::optional<Ort::AllocatedStringPtr> outputNamePtr{};
-
-    std::vector<int64_t> inputDims;
-    std::vector<int64_t> outputDims;
-
+    std::string m_inputName;
+    std::string m_outputName;
 
 public:
 

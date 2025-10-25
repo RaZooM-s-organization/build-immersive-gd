@@ -6,16 +6,6 @@
 
 // todo: memory check
 
-// #include <chrono>
-// static std::chrono::steady_clock::time_point dbgTmrBegin;
-// struct DbgTimer {
-//     static void start() {dbgTmrBegin = std::chrono::steady_clock::now();}
-//     static void stop(bool print=true) {
-//         auto end = std::chrono::steady_clock::now();
-//         auto d1 = std::chrono::duration_cast<std::chrono::microseconds>(end - dbgTmrBegin).count();
-//         if (print) log::info("Timer: {} mks", d1);
-//     }
-// };
 
 
 
