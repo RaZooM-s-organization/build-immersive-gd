@@ -117,7 +117,7 @@ CameraFrame CameraMan::getPendingFrame() {
     m_latestFrameOwnership.lock();
     auto copy = m_latestFrame;
     m_latestFrameOwnership.unlock();
-    return std::move(copy);
+    return copy;
 }
 
 
@@ -158,4 +158,30 @@ bool CameraMan::processFrame() {
         av_packet_unref(pkt);
     }
     return success;
+}
+
+std::vector<std::string> CameraMan::getAvailableCameras() {
+    avdevice_register_all();
+
+    std::vector<std::string> ret;
+
+    const AVInputFormat* iformat = av_find_input_format("dshow");
+    if (!iformat) return ret;
+
+    AVDeviceInfoList* deviceList = nullptr;
+    int devCount = avdevice_list_input_sources(iformat, nullptr, nullptr, &deviceList);
+    if (devCount < 0) return ret;
+
+    for (int i = 0; i < deviceList->nb_devices; i++) {
+        AVDeviceInfo* dev = deviceList->devices[i];
+        for (int j = 0; j < dev->nb_media_types; j++) {
+            if (dev->media_types[j] == AVMEDIA_TYPE_VIDEO) {
+                ret.push_back(dev->device_description);
+                break;
+            }
+        }
+    }
+
+    avdevice_free_list_devices(&deviceList);
+    return ret;
 }

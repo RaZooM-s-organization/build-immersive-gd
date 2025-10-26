@@ -10,7 +10,7 @@ struct PoseResult {
     int m_width{};
     int m_height{};
     // points in source image pixel coords from bottom left
-    std::unordered_map<int8_t, CCPoint> idk{};
+    std::map<int, CCPoint> m_points{};
 };
 
 

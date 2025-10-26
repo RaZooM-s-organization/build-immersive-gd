@@ -4,6 +4,7 @@
 #include <codecvt>
 #include <cmath>
 
+#include <windows.h>
 
 // in:  [ 1  3   256  192 ]
 // out: [ 1  17  64   48  ]
@@ -111,24 +112,31 @@ PoseEstimator::PoseEstimator(std::shared_ptr<CameraMan> cameraman) {
 
     m_modelFilepath = getModelPathWstring();
 
-    Ort::Env env(OrtLoggingLevel::ORT_LOGGING_LEVEL_WARNING, "instanceName.c_str()");
-    Ort::SessionOptions sessionOptions;
-    sessionOptions.SetIntraOpNumThreads(2); // todo: a setting for that && test
+    m_env = Ort::Env(OrtLoggingLevel::ORT_LOGGING_LEVEL_WARNING, "hrnet");
+
+    m_sessionOptions = Ort::SessionOptions();
+    m_sessionOptions.SetIntraOpNumThreads(2); // todo: a setting for that && test
+    m_sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
 
     if (false) { // todo: useCuda
-        OrtCUDAProviderOptions cuda_options{};
-        sessionOptions.AppendExecutionProvider_CUDA(cuda_options);
+        OrtCUDAProviderOptions cudaOptions{};
+        m_sessionOptions.AppendExecutionProvider_CUDA(cudaOptions);
+        // todo: check, maybe use Ort::MemoryInfo::CreateCpu
+        m_memoryInfo = Ort::MemoryInfo("Cuda", OrtDeviceAllocator, 0, OrtMemTypeDefault);
+    } else {
+        m_memoryInfo = Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault);
     }
+    
+    m_session = Ort::Session(m_env, m_modelFilepath.c_str(), m_sessionOptions);
+    
+    m_allocator = Ort::Allocator(m_session, m_memoryInfo);
 
-    sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
-    
-    m_session = Ort::Session(env, m_modelFilepath.c_str(), sessionOptions);
-    
-    Ort::AllocatorWithDefaultOptions allocator;
+    // todo: use allocator instead of std::makeshared...
 
     // get input/output info
-    m_inputName = m_session.GetInputNameAllocated(0, allocator).get();
-    m_outputName = m_session.GetOutputNameAllocated(0, allocator).get();
+    m_inputName = m_session.GetInputNameAllocated(0, m_allocator).get();
+    m_outputName = m_session.GetOutputNameAllocated(0, m_allocator).get();
+
 
     m_secondThread = std::thread(&PoseEstimator::processVideoStream, this);
 }
@@ -147,7 +155,7 @@ PoseResult PoseEstimator::getPendingPoseResult() {
     m_latestPoseOwnership.lock();
     auto copy = m_latestPose;
     m_latestPoseOwnership.unlock();
-    return std::move(copy);
+    return copy;
 }
 
 
@@ -186,38 +194,38 @@ bool PoseEstimator::processFrame() {
     auto inputTensorData = std::make_unique<float[]>(inputTensorSize);
     auto outputTensorData = std::make_unique<float[]>(outputTensorSize);
 
+    // auto inputTensorData = (float*) m_allocator.Alloc(inputTensorSize * sizeof(float));
+    // auto outputTensorData = (float*) m_allocator.Alloc(outputTensorSize * sizeof(float));
+
     resizeConvertAndSplitImageAllInOne((RGB_888*)rgb888data, inputTensorData.get(), 
         frame.m_height, frame.m_width, MODEL_IN_HEIGHT, MODEL_IN_WIDTH);
-    
 
-    Ort::MemoryInfo memoryInfo = Ort::MemoryInfo::CreateCpu(
-        OrtAllocatorType::OrtArenaAllocator, OrtMemType::OrtMemTypeDefault);
     
     auto inputTensor = Ort::Value::CreateTensor<float>(
-        memoryInfo, inputTensorData.get(), inputTensorSize, inputDims, 4);
+        m_memoryInfo, inputTensorData.get(), inputTensorSize, inputDims, 4);
 
     auto outputTensor = Ort::Value::CreateTensor<float>(
-        memoryInfo, outputTensorData.get(), outputTensorSize, outputDims, 4);
+        m_memoryInfo, outputTensorData.get(), outputTensorSize, outputDims, 4);
     
-    
+
     const char* inputName = m_inputName.c_str();
     const char* outputName = m_outputName.c_str();
     
     // DbgTimer::start();
 
-    m_session.Run(Ort::RunOptions{nullptr}, &inputName, &inputTensor, 1, &outputName, &outputTensor, 1);
+    m_session.Run(Ort::RunOptions{}, &inputName, &inputTensor, 1, &outputName, &outputTensor, 1);
+
+    // log::info("d");
     
     // DbgTimer::stop();
     
     
-    // in this case output dims are [1,17,64,48]
-    auto outputDataPtr = outputTensorData.get();
-    auto outFrameSize = MODEL_OUT_HEIGHT * MODEL_OUT_WIDTH;
-
-    CCPoint results[MODEL_OUT_DIM];
-
+    
+    std::map<int, CCPoint> points;
+    
     std::vector<float> values;
-
+    
+    float* outputDataPtr = outputTensorData.get();
     for (int i = 0; i < MODEL_OUT_DIM; i++) {
         float maxVal = -9999;
         CCPoint maxLoc;
@@ -230,11 +238,8 @@ bool PoseEstimator::processFrame() {
                 outputDataPtr++;
             }
         }
-        // todo: threshold
-        // maxLoc * 4 - scale factor
-        // cv::circle(resizedImageBGR, maxLoc * 4, 3, {0,255,255}, 3);
         if (maxVal > THRESHOLD) {
-            results[i] = ccp(
+            points[i] = ccp(
                 maxLoc.x * frame.m_width / MODEL_OUT_WIDTH,
                 (MODEL_OUT_HEIGHT - maxLoc.y) * frame.m_height / MODEL_OUT_HEIGHT
             );
@@ -243,7 +248,7 @@ bool PoseEstimator::processFrame() {
     }
     float sum=0;
     for(float v:values) sum+=v;
-    log::info("AVG: {}",sum/values.size());
+    // log::info("AVG: {}",sum/values.size());
 
 
     // update state
@@ -251,11 +256,9 @@ bool PoseEstimator::processFrame() {
     m_latestPose.m_height = frame.m_height;
     m_latestPose.m_width = frame.m_width;
     m_latestPose.m_id = frame.m_id;
-    m_latestPose.idk.clear();
-    for (int i = 0; i < MODEL_OUT_DIM; i++) {
-        m_latestPose.idk[i] = results[i]; // todo: results[] contains trash vals
-    }
+    m_latestPose.m_points = points;
     m_latestPoseOwnership.unlock();
+
 
     return true;
 }

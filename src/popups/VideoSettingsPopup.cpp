@@ -17,26 +17,26 @@ VideoSettingsPopup* VideoSettingsPopup::create() {
 }
 
 bool VideoSettingsPopup::setup(int) {
-    m_closeBtn->setVisible(false);
-    setTitle("Video Settings");
+    // m_closeBtn->setVisible(false);
+    setTitle("Video Preview");
     setID("video-settings-popup"_spr);
 
     m_buttonMenu->addChildAtPosition(
         InfoAlertButton::create(
-            "Video Settings", 
+            "Info", 
             "todo", 
             0.75
         ), 
         Anchor::TopRight, ccp(-18, -18)
     );
 
-    m_buttonMenu->addChildAtPosition(
-        CCMenuItemSpriteExtra::create(
-            ButtonSprite::create("ok", "goldFont.fnt", "GJ_button_01.png", 1),
-            this, menu_selector(VideoSettingsPopup::onClose)
-        ),
-        Anchor::Bottom
-    );
+    // m_buttonMenu->addChildAtPosition(
+    //     CCMenuItemSpriteExtra::create(
+    //         ButtonSprite::create("ok", "goldFont.fnt", "GJ_button_01.png", 1),
+    //         this, menu_selector(VideoSettingsPopup::onClose)
+    //     ),
+    //     Anchor::Bottom
+    // );
 
     setupCameraPreview();
 
@@ -63,21 +63,34 @@ void VideoSettingsPopup::setupCameraPreview() {
     }
 
     auto winSz = CCDirector::get()->getWinSize();
-    float ratio = winSz.height / winSz.width;
-    // width is fixed, height is adaptive
-    float w = m_mainLayer->getContentWidth() / 2.5;
-    float h = w * ratio;
-    float posX = m_mainLayer->getContentWidth() * 0.75;
-    float posY = m_mainLayer->getContentHeight() - h / 2 - 60;
+
+    // height is fixed, height is adaptive
+    float h = 150;
+    float w = h * winSz.width / winSz.height;
+
+    float posX = m_mainLayer->getContentWidth() / 2;
+    float posY = m_mainLayer->getContentHeight() - h / 2 - 40;
     m_videoplayer->setContentSize({w,h});
     m_mainLayer->addChild(m_videoplayer);
     m_videoplayer->setPosition({posX, posY});
+    m_videoplayer->setZOrder(2);
+
+    // video player bg
+    auto bg = CCLayerColor::create();
+    bg->setColor(ccc3(0,0,0));
+    bg->setOpacity(100);
+    bg->ignoreAnchorPointForPosition(false);
+    bg->setContentSize(m_videoplayer->getContentSize() + ccp(10,10));
+    m_mainLayer->addChild(bg);
+    bg->setPosition(m_videoplayer->getPosition());
+    bg->setZOrder(0);
+    
 
     // title
-    auto lbl = CCLabelBMFont::create("Video Preview", "bigFont.fnt");
-    m_mainLayer->addChild(lbl);
-    lbl->setPosition({posX, posY + h / 2 + 15});
-    lbl->setScale(0.5);
+    // auto lbl = CCLabelBMFont::create("Video Preview", "bigFont.fnt");
+    // m_mainLayer->addChild(lbl);
+    // lbl->setPosition({posX, posY + h / 2 + 15});
+    // lbl->setScale(0.5);
 }
 
 void VideoSettingsPopup::onClose(CCObject* obj) {

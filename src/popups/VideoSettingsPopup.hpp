@@ -1,11 +1,8 @@
 #pragma once
 
-#include <Geode/Geode.hpp>
 
 #include "../videoTools/VideoPlayer.hpp"
 
-
-using namespace geode::prelude;
 
 class VideoSettingsPopup : public Popup<int> {
 protected:

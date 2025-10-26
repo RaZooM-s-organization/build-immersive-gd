@@ -7,16 +7,182 @@
 		"ios": "2.2074"
 	},
 	"id": "razoom.s_pov",
-	"name": "VideoPlayer",
+	"name": "RaZooM's POV",
 	"version": "v1.0.0",
 	"developer": "RaZooM",
 	"description": "ghjkl",
+
 	"dependencies": {
 		"geode.node-ids": ">=v1.20.0"
 	},
+
 	"resources": {
 		"files": [
 			"resources/models/hrnet_coco_w32_256x192.onnx"
 		]
+	},
+
+	"settings": {
+		"video-capture-title": {
+			"type": "title",
+			"name": "Video Capture"
+		},
+		"device-name": {
+			"type": "custom:razoom.s_pov/select-camera",
+			"name": "Video Device",
+			"description": "Camera that is used for capturing the video",
+			"default": "(auto)"
+		},
+		"quality-multiplier":{
+			"type": "float",
+			"name": "Video Quality",
+			"description": "If you have a high-resolution camera and video lags, try to decrease this value",
+			"default": 1.0,
+			"min": 0.1,
+			"max": 1.0,
+			"control": {
+				"arrows": false,
+				"big-arrows": false,
+				"slider": true,
+				"slider-step": 0.01
+			}
+		},
+
+
+		"video-output-title": {
+			"type": "title",
+			"name": "Video Output"
+		},
+		"video-output-enable": {
+			"type": "bool",
+			"name": "Enable",
+			"default": true,
+			"description": "Translate the video to the background of the level"
+		},
+		"video-output-fps-limit": {
+			"type": "int",
+			"name": "FPS Limit",
+			"description": "Maximum refresh rate of the video",
+			"default": 60,
+			"min": 5,
+			"max": 240,
+			"control": {
+				"arrows": true,
+				"big-arrows": false,
+				"slider": true
+			},
+			"enable-if": "video-output-enable"
+		},
+		"video-output-layer": {
+			"type": "string",
+			"name": "Layer",
+			"description": "Layer above which the video is shown",
+			"default": "BG",
+			"one-of": ["BG", "B5", "B4", "B3", "B2", "B1", "B0", "T1", "T2", "T3", "T4"],
+			"enable-if": "video-output-enable"
+		},
+		
+
+		"pose-estimation-title":{
+			"type": "title",
+			"name": "Pose Estimation"
+		},
+		"pose-estimation-enable": {
+			"type": "bool",
+			"name": "Enable",
+			"default": true,
+			"description": "Enable pose estimation and game control with the pose"
+		},
+		"pose-estimation-num-of-threads": {
+			"type": "int",
+			"name": "Number Of Threads",
+			"description": "Pose estimation is a complex task uses the neural network and requires many computational resources. That is why it is executed in parallel in several threads. <cg>The more threads it uses the faster it works</c>",
+			"default": 5,
+			"min": 1,
+			"max": 10,
+			"control": {
+				"arrows": true,
+				"big-arrows": false,
+				"slider": false
+			},
+			"enable-if": "pose-estimation-enable"
+		},
+		"pose-estimation-video-output-fps-limit": {
+			"type": "int",
+			"name": "FPS Limit",
+			"description": "Maximum refresh rate of the pose estimation",
+			"default": 30,
+			"min": 10,
+			"max": 60,
+			"control": {
+				"arrows": true,
+				"big-arrows": false,
+				"slider": true
+			},
+			"enable-if": "pose-estimation-enable"
+		},
+		"pose-estimation-use-gpu": {
+			"type": "bool",
+			"name": "Use GPU (only NVIDIA supported)",
+			"description": "Use GPU to speed up the neural network computations. \n <co>Don't enable if you don't have an NVIDIA GPU</c>\n<cg>But if you have it, I highly recommend enabling this option!</c>",
+			"default": false,
+			"enable-if": "pose-estimation-enable"
+		},
+		"pose-estimation-debug-draw": {
+			"type": "bool",
+			"name": "Show the pose",
+			"description": "Show estimated pose when playing a level. \n <cb>I promise to make it less ugly in the future</c>",
+			"default": false,
+			"enable-if": "pose-estimation-enable"
+		},
+
+
+		"green-screen-title": {
+			"type": "title",
+			"name": "Green Screen"
+		},
+		"green-screen-enable":{
+			"type": "bool",
+			"name": "Enable",
+			"description": "Use the green screen",
+			"default": false
+		},
+		"green-screen-color": {
+			"type": "rgb",
+			"name": "Green Screen Color",
+			"description": "Color that will be replaced. Online color picker: https://imagecolorpicker.com/",
+			"default": [0, 255, 0],
+			"enable-if": "green-screen-enable"
+		},
+		"green-screen-tolerance": {
+			"type": "float",
+			"name": "Tolerance",
+			"description": "Green screen color +- %",
+			"default": 5.0,
+			"min": 0.0,
+			"max": 100.0,
+			"control": {
+				"arrows": false,
+				"big-arrows": false,
+				"slider": true,
+				"slider-step": 0.01
+			},
+			"enable-if": "green-screen-enable"
+		},
+		"green-screen-edge-blur": {
+			"type": "float",
+			"name": "Edge Blur",
+			"description": "Edge blur %",
+			"default": 5.0,
+			"min": 0.0,
+			"max": 100.0,
+			"control": {
+				"arrows": false,
+				"big-arrows": false,
+				"slider": true,
+				"slider-step": 0.01
+			},
+			"enable-if": "green-screen-enable"
+		}
 	}
 }

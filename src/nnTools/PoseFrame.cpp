@@ -29,11 +29,42 @@ bool PoseFrame::init(std::shared_ptr<PoseEstimator> worker) {
     return true;
 }
 
-void PoseFrame::draw() {
-    ccDrawColor4B(ccc4(255, 124, 124, 255));
-    auto idk = m_poseEstimator->getPendingPoseResult();
-    for (auto& [k, point] : idk.idk) {
-        ccDrawFilledCircle(point * m_sizeMultiplier, 5, 0, 10);
+
+inline void tryToDrawLine(int a, int b, std::map<int, cocos2d::CCPoint> &map, float mul) {
+    auto itA = map.find(a);
+    auto itB = map.find(b);
+    if (itA != map.end() && itB != map.end()) {
+        ccDrawLine(itA->second * mul, itB->second * mul);
     }
+}
+
+void PoseFrame::draw() {
+    auto poseResult = m_poseEstimator->getPendingPoseResult();
+
+    ccDrawColor4B(ccc4(225, 255, 0, 255));
+    tryToDrawLine(0, 1, poseResult.m_points, m_sizeMultiplier);
+    tryToDrawLine(1, 3, poseResult.m_points, m_sizeMultiplier);
+    tryToDrawLine(0, 2, poseResult.m_points, m_sizeMultiplier);
+    tryToDrawLine(2, 4, poseResult.m_points, m_sizeMultiplier);
+    tryToDrawLine(0, 5, poseResult.m_points, m_sizeMultiplier);
+    tryToDrawLine(5, 7, poseResult.m_points, m_sizeMultiplier);
+    tryToDrawLine(7, 9, poseResult.m_points, m_sizeMultiplier);
+    tryToDrawLine(0, 6, poseResult.m_points, m_sizeMultiplier);
+    tryToDrawLine(6, 8, poseResult.m_points, m_sizeMultiplier);
+    tryToDrawLine(8, 10, poseResult.m_points, m_sizeMultiplier);
+    tryToDrawLine(5, 11, poseResult.m_points, m_sizeMultiplier);
+    tryToDrawLine(11, 13, poseResult.m_points, m_sizeMultiplier);
+    tryToDrawLine(13, 15, poseResult.m_points, m_sizeMultiplier);
+    tryToDrawLine(6, 12, poseResult.m_points, m_sizeMultiplier);
+    tryToDrawLine(12, 14, poseResult.m_points, m_sizeMultiplier);
+    tryToDrawLine(14, 16, poseResult.m_points, m_sizeMultiplier);
+    tryToDrawLine(5, 6, poseResult.m_points, m_sizeMultiplier);
+    tryToDrawLine(11, 12, poseResult.m_points, m_sizeMultiplier);
+
+    ccDrawColor4B(ccc4(255, 124, 124, 255));
+    for (auto& [k, point] : poseResult.m_points) {
+        ccDrawFilledCircle(point * m_sizeMultiplier, 3, 0, 10);
+    }
+
     CCSprite::draw();
 }
