@@ -1,15 +1,47 @@
 #include "../popups/VideoPreviewPopup.hpp"
+#include "LevelInfoLayer.hpp"
 
-#include <Geode/Geode.hpp>
 #include <Geode/modify/PlayLayer.hpp>
-
-using namespace geode::prelude;
 
 
 class $modify(MyPlayLayer, PlayLayer) {
+
+    struct Fields {
+        std::shared_ptr<CameraMan> m_cameraMan{};
+        bool m_enable{};
+    };
+
+
     bool init(GJGameLevel* level, bool useReplay, bool dontCreateObjects) {
         if (!PlayLayer::init(level, useReplay, dontCreateObjects)) return false;
-        
+
+        auto f = m_fields.self();
+
+        if (auto levelInfo = CCScene::get()->getChildByType<LevelInfoLayer>(0)) {
+            auto levelInfoFields = reinterpret_cast<MyLevelInfoLayer*>(levelInfo)->m_fields.self();
+            f->m_cameraMan = levelInfoFields->m_cameraMan;
+            f->m_enable = levelInfoFields->m_shouldEnableTheModOnPlayLayer;
+        }
+
+        if (!f->m_enable) {
+            f->m_cameraMan = nullptr;
+            return true;
+        };
+
+        if (!f->m_cameraMan) {
+            f->m_cameraMan = std::make_shared<CameraMan>();
+            auto res = f->m_cameraMan->setupFFMPEG();
+            if (res.isErr()) {
+                log::error("{}", res.unwrapErr());
+                f->m_cameraMan = nullptr;
+                f->m_enable = false;
+                return true;
+            }
+        }
+
+        // Here we have a working cameraMan
+
+
         return true;
     }
 

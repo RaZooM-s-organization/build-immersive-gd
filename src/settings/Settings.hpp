@@ -77,3 +77,13 @@ struct ModSettings {
         return instance;
     }
 };
+
+
+struct ModGlobal {
+    
+
+    static ModGlobal& get() {
+        static ModGlobal instance;
+        return instance;
+    }
+};

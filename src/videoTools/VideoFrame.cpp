@@ -31,6 +31,16 @@ int VideoFrame::getFps() {
 }
 
 
+CCTexture2DPixelFormat VideoFrame::getTexturePixelFormat() const {
+    return kCCTexture2DPixelFormat_RGB888;
+}
+
+
+std::unique_ptr<uint8_t[]> VideoFrame::preprocessImageData(uint8_t* data, int w, int h) {
+    return nullptr; // already desired format
+}
+
+
 bool VideoFrame::init(std::shared_ptr<CameraMan> cameraMan) {
 
     m_cameraMan = cameraMan;
@@ -41,7 +51,7 @@ bool VideoFrame::init(std::shared_ptr<CameraMan> cameraMan) {
     m_ccTexture = new CCTexture2D();
     m_ccTexture->initWithData(
         nullptr,
-        kCCTexture2DPixelFormat_RGB888,
+        getTexturePixelFormat(),
         outWidth, outHeight, CCSizeMake(outWidth, outHeight)
     );
     m_ccTexture->autorelease();
@@ -73,10 +83,13 @@ void VideoFrame::visit() {
             if (auto glid = m_ccTexture->getName()) {
                 ccGLDeleteTexture(glid);
             }
+
+            auto prepData = preprocessImageData(frame.m_data.get(), frame.m_width, frame.m_height);
+            auto imData = prepData ? prepData.get() : frame.m_data.get();
     
             m_ccTexture->initWithData(
-                frame.m_data.get(),
-                kCCTexture2DPixelFormat_RGB888,
+                imData,
+                getTexturePixelFormat(),
                 frame.m_width, frame.m_height,
                 CCSizeMake(frame.m_width, frame.m_height)
             );

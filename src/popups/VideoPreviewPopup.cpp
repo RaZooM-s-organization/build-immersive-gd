@@ -3,6 +3,7 @@
 #include "../videoTools/ErrorFrame.hpp"
 #include "../nnTools/PoseEstimator.hpp"
 #include "../settings/Settings.hpp"
+#include "../hooks/LevelInfoLayer.hpp"
 
 #include <Geode/ui/GeodeUI.hpp>
 
@@ -49,19 +50,20 @@ bool VideoPreviewPopup::setup(int) {
 void VideoPreviewPopup::setupCameraPreview() {
     m_videoplayer = VideoPlayer::create(ClippingMode::Fit);
 
-    auto cameraMan = std::make_shared<CameraMan>();
-    auto res = cameraMan->setupFFMPEG();
+    m_cameraMan = std::make_shared<CameraMan>();
+    auto res = m_cameraMan->setupFFMPEG();
 
     if (res.isOk()) {
         // add video frame
-        m_videoFrame = VideoFrame::create(cameraMan);
+        m_videoFrame = VideoFrame::create(m_cameraMan);
         m_videoplayer->addFrame(m_videoFrame);
         // add pose m_videoFrame
-        auto worker = std::make_shared<PoseEstimator>(cameraMan);
+        auto worker = std::make_shared<PoseEstimator>(m_cameraMan);
         m_poseFrame = PoseFrame::create(worker);
         m_videoplayer->addFrame(m_poseFrame);
     } else {
         m_videoplayer->addFrame(ErrorFrame::create(res.unwrapErr()));
+        m_cameraMan = nullptr;
     }
 
     auto winSz = CCDirector::get()->getWinSize();
@@ -88,11 +90,31 @@ void VideoPreviewPopup::setupCameraPreview() {
     bg->setZOrder(0);
     
 
-    // title
-    // auto lbl = CCLabelBMFont::create("Video Preview", "bigFont.fnt");
-    // m_mainLayer->addChild(lbl);
-    // lbl->setPosition({posX, posY + h / 2 + 15});
-    // lbl->setScale(0.5);
+    // gameMode buttons
+    auto gmButtonsMenu = CCMenu::create();
+    const char* gmButtonNames[] = {
+        "gj_iconBtn_off_001.png", "gj_iconBtn_on_001.png",
+        "gj_shipBtn_off_001.png", "gj_shipBtn_on_001.png",
+        "gj_ballBtn_off_001.png", "gj_ballBtn_on_001.png",
+        "gj_birdBtn_off_001.png", "gj_birdBtn_on_001.png",
+        "gj_dartBtn_off_001.png", "gj_dartBtn_on_001.png",
+        "gj_robotBtn_off_001.png", "gj_robotBtn_on_001.png",
+        "gj_spiderBtn_off_001.png", "gj_spiderBtn_on_001.png",
+        "gj_swingBtn_off_001.png", "gj_swingBtn_on_001.png"
+    };
+    for (int i = 0; i < 8; i++) {
+        auto toggler = CCMenuItemToggler::create(
+            CCSprite::createWithSpriteFrameName(gmButtonNames[2*i]),
+            CCSprite::createWithSpriteFrameName(gmButtonNames[2*i+1]),
+            this, menu_selector(VideoPreviewPopup::onModeButton)
+        );
+        toggler->setTag(i); // equal to IconType::
+        gmButtonsMenu->addChild(toggler);
+    }
+    m_mainLayer->addChildAtPosition(gmButtonsMenu, Anchor::Bottom, ccp(0, 75));
+    gmButtonsMenu->setContentSize({215, 20});
+    gmButtonsMenu->setLayout(RowLayout::create());
+
 
     // settings button
     auto spr = CCSprite::createWithSpriteFrameName("GJ_optionsBtn_001.png");
@@ -100,11 +122,23 @@ void VideoPreviewPopup::setupCameraPreview() {
     auto btn = CCMenuItemSpriteExtra::create(spr, this, menu_selector(VideoPreviewPopup::onModSettings));
     m_buttonMenu->addChildAtPosition(btn, Anchor::Left, ccp(30, 0));
 
+    // play button
+    auto playBtnSpr = CCSprite::createWithSpriteFrameName("GJ_playBtn2_001.png");
+    playBtnSpr->setScale(0.75);
+    auto playBtn = CCMenuItemSpriteExtra::create(
+        playBtnSpr, this, menu_selector(VideoPreviewPopup::onPlayButton)
+    );
+    m_buttonMenu->addChildAtPosition(playBtn, Anchor::BottomRight, ccp(-47,47));
+    if (CCScene::get()->getChildByType<LevelInfoLayer>(0) == nullptr) {
+        playBtn->setVisible(false);
+    }
+
+
     // FPS labels
     m_videoInfoLbl = CCLabelBMFont::create("", "goldFont.fnt");
     m_videoInfoLbl->setScale(0.5);
     m_videoInfoLbl->setAnchorPoint({0,0});
-    m_mainLayer->addChildAtPosition(m_videoInfoLbl, Anchor::BottomLeft, ccp(60, 60));
+    m_mainLayer->addChildAtPosition(m_videoInfoLbl, Anchor::BottomLeft, ccp(60, 40));
 
     m_poseInfoLbl = CCLabelBMFont::create("", "goldFont.fnt");
     m_poseInfoLbl->setScale(0.5);
@@ -112,7 +146,33 @@ void VideoPreviewPopup::setupCameraPreview() {
     m_mainLayer->addChild(m_poseInfoLbl);
     m_poseInfoLbl->setPosition(m_videoInfoLbl->getPosition() - ccp(0, 20));
 
+
+    // pose debug labels
+    auto dbgBase = CCNodeRGBA::create();
+    dbgBase->setPosition(m_videoplayer->getPosition());
+    dbgBase->setContentSize(m_videoplayer->getScaledContentSize());
+    dbgBase->setAnchorPoint({0.5,0.5});
+
+    m_debugLabel = CCLabelBMFont::create("Cube:", "bigFont.fnt");
+    m_debugLabel->setScale(0.3);
+    dbgBase->setCascadeOpacityEnabled(true);
+    dbgBase->addChild(m_debugLabel);
+    dbgBase->setLayout(AxisLayout::create(Axis::Column)
+        ->setGrowCrossAxis(true)
+        ->setAutoScale(false)
+        ->setCrossAxisOverflow(false)
+        ->setAxisAlignment(AxisAlignment::End)
+        ->setCrossAxisAlignment(AxisAlignment::Start)
+        ->setCrossAxisLineAlignment(AxisAlignment::Start)
+        ->setAxisReverse(true)
+        ->setCrossAxisReverse(true)
+    );
+    dbgBase->setOpacity(100);
+
+    m_mainLayer->addChild(dbgBase, 5);
+
     schedule(schedule_selector(VideoPreviewPopup::updateLabels), 0.5);
+    schedule(schedule_selector(VideoPreviewPopup::updateModeLabels), 0.2);
     
 }
 
@@ -131,6 +191,11 @@ void VideoPreviewPopup::updateLabels(float) {
         poseEn ? "enabled" : "disabled",
         m_poseFrame ? m_poseFrame->getFps() : 0
     ).c_str());
+}
+
+
+void VideoPreviewPopup::updateModeLabels(float) {
+
 }
 
 
@@ -168,4 +233,28 @@ void VideoPreviewPopup::onModSettings(CCObject*) {
     auto popup = openSettingsPopup(Mod::get(), true);
     popup->setID("mod-settings"_spr);
     CCScene::get()->addChild(ControlSettingCloseNode::create());
+}
+
+
+void VideoPreviewPopup::onModeButton(CCObject* btn) {
+    auto toggler = static_cast<CCMenuItemToggler*>(btn);
+    bool newVal = !toggler->isToggled();
+    if (newVal) { // this toggler will be selected
+        if (auto sel = toggler->getParent()->getChildByID("X")) {
+            static_cast<CCMenuItemToggler*>(sel)->toggle(false);
+            sel->setID("");
+        }
+        m_selectedGameMode = (IconType) toggler->getTag();
+        toggler->setID("X");
+    } else { // all togglers will be deselected
+        m_selectedGameMode = std::nullopt;
+    }
+}
+
+
+void VideoPreviewPopup::onPlayButton(CCObject* btn) {
+    if (auto infoLayer = CCScene::get()->getChildByType<LevelInfoLayer>(0)) {
+        onClose(nullptr);
+        reinterpret_cast<MyLevelInfoLayer*>(infoLayer)->onPlayRaZooM(m_cameraMan);
+    }
 }
