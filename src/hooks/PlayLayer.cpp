@@ -1,4 +1,4 @@
-#include "../popups/VideoSettingsPopup.hpp"
+#include "../popups/VideoPreviewPopup.hpp"
 
 #include <Geode/Geode.hpp>
 #include <Geode/modify/PlayLayer.hpp>

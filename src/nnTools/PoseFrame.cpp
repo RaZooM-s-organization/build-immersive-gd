@@ -30,6 +30,11 @@ bool PoseFrame::init(std::shared_ptr<PoseEstimator> worker) {
 }
 
 
+int PoseFrame::getFps() {
+    return m_poseEstimator->getFps();
+}
+
+
 inline void tryToDrawLine(int a, int b, std::map<int, cocos2d::CCPoint> &map, float mul) {
     auto itA = map.find(a);
     auto itB = map.find(b);
@@ -40,8 +45,11 @@ inline void tryToDrawLine(int a, int b, std::map<int, cocos2d::CCPoint> &map, fl
 
 void PoseFrame::draw() {
     auto poseResult = m_poseEstimator->getPendingPoseResult();
+    float scaleMultiplier = 1 / getScale();
 
     ccDrawColor4B(ccc4(225, 255, 0, 255));
+    glLineWidth(5);
+
     tryToDrawLine(0, 1, poseResult.m_points, m_sizeMultiplier);
     tryToDrawLine(1, 3, poseResult.m_points, m_sizeMultiplier);
     tryToDrawLine(0, 2, poseResult.m_points, m_sizeMultiplier);
@@ -61,10 +69,12 @@ void PoseFrame::draw() {
     tryToDrawLine(5, 6, poseResult.m_points, m_sizeMultiplier);
     tryToDrawLine(11, 12, poseResult.m_points, m_sizeMultiplier);
 
-    ccDrawColor4B(ccc4(255, 124, 124, 255));
+    ccDrawColor4B(ccc4(255, 125, 125, 255));
     for (auto& [k, point] : poseResult.m_points) {
-        ccDrawFilledCircle(point * m_sizeMultiplier, 3, 0, 10);
+        ccDrawFilledCircle(point * m_sizeMultiplier, 4 * scaleMultiplier, 0, 10);
     }
+
+    glLineWidth(1);
 
     CCSprite::draw();
 }

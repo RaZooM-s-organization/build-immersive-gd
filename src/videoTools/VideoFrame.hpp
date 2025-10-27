@@ -2,6 +2,7 @@
 
 #include "VideoTools.hpp"
 #include "CameraMan.hpp"
+#include "../utils/FpsLimiter.hpp"
 
 
 class VideoFrame : public CCSprite {
@@ -10,6 +11,7 @@ protected:
     std::shared_ptr<CameraMan> m_cameraMan;
     CCTexture2D* m_ccTexture{};
     uint32_t m_currentFrameId = 0;
+    FpsLimiter m_fpsLimiter;
 
 public:
 
@@ -18,6 +20,7 @@ public:
 
     bool init(std::shared_ptr<CameraMan> cameraMan);
     void visit() override;
+    int getFps();
 
 };
 

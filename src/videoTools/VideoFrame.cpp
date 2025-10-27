@@ -1,5 +1,5 @@
 #include "VideoFrame.hpp"
-
+#include "../settings/Settings.hpp"
 
 // TODO: ffmpeg dlls in Geometry Dash folder
 // https://trac.ffmpeg.org/wiki/CompilationGuide/MSVC
@@ -21,16 +21,17 @@ VideoFrame* VideoFrame::create(std::shared_ptr<CameraMan> cameraMan) {
 
 
 VideoFrame::~VideoFrame() {
-
     CC_SAFE_RELEASE(m_ccTexture);
-
     log::info("Frame cleared");
 }
 
 
-bool VideoFrame::init(std::shared_ptr<CameraMan> cameraMan) {
+int VideoFrame::getFps() {
+    return m_fpsLimiter.getActualRefreshRate();
+}
 
-    // const char* device_name = "video=Live Streamer CAM 313"; // todo:
+
+bool VideoFrame::init(std::shared_ptr<CameraMan> cameraMan) {
 
     m_cameraMan = cameraMan;
 
@@ -54,32 +55,38 @@ bool VideoFrame::init(std::shared_ptr<CameraMan> cameraMan) {
         case TextureQuality::kTextureQualityMedium: sizeMultiplier = 0.5; break;
         case TextureQuality::kTextureQualityHigh: sizeMultiplier = 0.25; break;
     }
-
     setContentSize(CCSizeMake(outWidth, outHeight) * sizeMultiplier);
+
+    m_fpsLimiter.setFpsLimit(ModSettings::get().m_videoOutput.m_fpsLimit);
+
     return true;
 }
 
 
 void VideoFrame::visit() {
+
+    if (m_fpsLimiter.goodToGo()) {
+        auto frame = m_cameraMan->getPendingFrame();
     
-    auto frame = m_cameraMan->getPendingFrame();
-
-    if (frame.m_id != m_currentFrameId && frame.m_data.get() != nullptr) {
-
-        if (auto glid = m_ccTexture->getName()) {
-            ccGLDeleteTexture(glid);
+        if (frame.m_id != m_currentFrameId && frame.m_data.get() != nullptr) {
+    
+            if (auto glid = m_ccTexture->getName()) {
+                ccGLDeleteTexture(glid);
+            }
+    
+            m_ccTexture->initWithData(
+                frame.m_data.get(),
+                kCCTexture2DPixelFormat_RGB888,
+                frame.m_width, frame.m_height,
+                CCSizeMake(frame.m_width, frame.m_height)
+            );
+            updateBlendFunc();
+    
+            m_currentFrameId = frame.m_id;
+            m_fpsLimiter.refresh();
         }
-
-        m_ccTexture->initWithData(
-            frame.m_data.get(),
-            kCCTexture2DPixelFormat_RGB888,
-            frame.m_width, frame.m_height,
-            CCSizeMake(frame.m_width, frame.m_height)
-        );
-        updateBlendFunc();
-
-        m_currentFrameId = frame.m_id;
     }
+    
     CCSprite::visit();
 }
 

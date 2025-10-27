@@ -1,5 +1,6 @@
 #include "PoseEstimator.hpp"
 
+#include "../settings/Settings.hpp"
 
 #include <codecvt>
 #include <cmath>
@@ -20,17 +21,6 @@
 
 // todo: on test setup test with rotated image
 
-
-// #include <chrono>
-// static std::chrono::steady_clock::time_point dbgTmrBegin;
-// struct DbgTimer {
-//     static void start() {dbgTmrBegin = std::chrono::steady_clock::now();}
-//     static void stop(bool print=true) {
-//         auto end = std::chrono::steady_clock::now();
-//         auto d1 = std::chrono::duration_cast<std::chrono::microseconds>(end - dbgTmrBegin).count();
-//         if (print) log::info("Timer: {} mks", d1);
-//     }
-// };
 
 
 typedef std::array<uint8_t, 3> RGB_888;
@@ -100,7 +90,7 @@ void resizeConvertAndSplitImageAllInOne(const RGB_888 *src, float *dst, int srcH
 }
 
 
-std::wstring getModelPathWstring() {
+inline std::wstring getModelPathWstring() {
     auto path = Mod::get()->getResourcesDir().append("hrnet_coco_w32_256x192.onnx");
     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
     return converter.from_bytes(path.string().c_str());
@@ -110,15 +100,19 @@ std::wstring getModelPathWstring() {
 PoseEstimator::PoseEstimator(std::shared_ptr<CameraMan> cameraman) {
     m_cameraMan = cameraman;
 
+    const bool useCuda = ModSettings::get().m_poseEstimation.m_useGPU;
+    const int fpsLimit = ModSettings::get().m_poseEstimation.m_fpsLimit;
+    const int numOfThreads = ModSettings::get().m_poseEstimation.m_numOfThreads;
+
     m_modelFilepath = getModelPathWstring();
 
     m_env = Ort::Env(OrtLoggingLevel::ORT_LOGGING_LEVEL_WARNING, "hrnet");
 
     m_sessionOptions = Ort::SessionOptions();
-    m_sessionOptions.SetIntraOpNumThreads(2); // todo: a setting for that && test
+    m_sessionOptions.SetIntraOpNumThreads(numOfThreads);
     m_sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
 
-    if (false) { // todo: useCuda
+    if (useCuda) {
         OrtCUDAProviderOptions cudaOptions{};
         m_sessionOptions.AppendExecutionProvider_CUDA(cudaOptions);
         // todo: check, maybe use Ort::MemoryInfo::CreateCpu
@@ -137,6 +131,7 @@ PoseEstimator::PoseEstimator(std::shared_ptr<CameraMan> cameraman) {
     m_inputName = m_session.GetInputNameAllocated(0, m_allocator).get();
     m_outputName = m_session.GetOutputNameAllocated(0, m_allocator).get();
 
+    m_fpsLimiter.setFpsLimit(fpsLimit);
 
     m_secondThread = std::thread(&PoseEstimator::processVideoStream, this);
 }
@@ -159,10 +154,20 @@ PoseResult PoseEstimator::getPendingPoseResult() {
 }
 
 
+int PoseEstimator::getFps() {
+    return m_fpsLimiter.getActualRefreshRate();
+}
+
+
 void PoseEstimator::processVideoStream() {
     m_secondThreadRunning = true;
     while (m_secondThreadRunning) {
-        bool success = processFrame();
+        if (m_fpsLimiter.goodToGo()) {
+            bool success = processFrame();
+            if (success) {
+                m_fpsLimiter.refresh();
+            }
+        }
         std::this_thread::yield();
     }
 }

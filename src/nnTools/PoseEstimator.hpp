@@ -3,6 +3,7 @@
 #include "NNTools.hpp"
 
 #include "../videoTools/CameraMan.hpp"
+#include "../utils/FpsLimiter.hpp"
 
 #include <onnxruntime_cxx_api.h>
 
@@ -26,6 +27,8 @@ protected:
     Ort::Session m_session{nullptr};
     Ort::Allocator m_allocator{nullptr};
     Ort::MemoryInfo m_memoryInfo{nullptr};
+
+    FpsLimiter m_fpsLimiter;
     
 
 public:
@@ -36,7 +39,8 @@ public:
 
     PoseResult getPendingPoseResult();
     void getFrameSizeInPix(int *pixW, int *pixH);
-
+    int getFps();
+    
 protected:
 
     bool processFrame();

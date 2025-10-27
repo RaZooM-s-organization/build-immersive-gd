@@ -16,4 +16,6 @@ public:
 
     void draw() override;
 
+    int getFps();
+
 };

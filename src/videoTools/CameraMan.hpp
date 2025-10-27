@@ -54,8 +54,7 @@ public:
     
     static std::vector<std::string> getAvailableCameras();
 
-    CameraMan() = delete;
-    CameraMan(std::string deviceName, float qualityMultiplier = 1.f);
+    CameraMan();
     ~CameraMan();
 
     CameraFrame getPendingFrame();

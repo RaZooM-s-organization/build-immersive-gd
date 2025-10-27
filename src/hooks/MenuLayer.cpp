@@ -1,4 +1,4 @@
-#include "../popups/VideoSettingsPopup.hpp"
+#include "../popups/VideoPreviewPopup.hpp"
 
 #include <Geode/Geode.hpp>
 #include <Geode/modify/MenuLayer.hpp>
@@ -25,7 +25,7 @@ class $modify(MenuLayer) {
 
     void onMoreGames(CCObject* sender) {
         
-        VideoSettingsPopup::create()->show();
+        VideoPreviewPopup::create()->show();
     }
 
 };

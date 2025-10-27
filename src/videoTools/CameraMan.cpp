@@ -1,10 +1,25 @@
 #include "CameraMan.hpp"
+#include "../settings/Settings.hpp"
 
 
-CameraMan::CameraMan(std::string deviceName, float qualityMultiplier) :
-    m_deviceName(deviceName),
-    m_qualityMultiplier(qualityMultiplier)
-{}
+std::shared_ptr<uint8_t> make_shared_av_buffer(size_t sz) {
+    auto ptr = (uint8_t*) av_malloc(sz);
+    auto deleter = [](uint8_t* p){av_free(p);};
+    return std::shared_ptr<uint8_t>(ptr, deleter);
+}
+
+
+CameraMan::CameraMan() {
+    m_qualityMultiplier = ModSettings::get().m_videoCapture.m_qualityMultiplier;
+    m_deviceName = ModSettings::get().m_videoCapture.m_deviceName;
+
+    if (m_deviceName.empty()) { // autodetect
+        auto devices = getAvailableCameras();
+        if (devices.size() > 0) {
+            m_deviceName = devices[0];
+        }
+    }
+}
 
 
 CameraMan::~CameraMan() {
@@ -21,17 +36,10 @@ CameraMan::~CameraMan() {
 }
 
 
-std::shared_ptr<uint8_t> make_shared_av_buffer(size_t sz) {
-    auto ptr = (uint8_t*) av_malloc(sz);
-    auto deleter = [](uint8_t* p){av_free(p);};
-    return std::shared_ptr<uint8_t>(ptr, deleter);
-}
-
-
 Result<void, std::string> CameraMan::setupFFMPEG() {
 
     if (m_deviceName.empty()) {
-        return Err("Device name can't be empty");
+        return Err("Video device not found");
     }
     const char* device_name = ("video=" + m_deviceName).c_str();
 

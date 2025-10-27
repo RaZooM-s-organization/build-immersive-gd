@@ -103,7 +103,7 @@
 			"control": {
 				"arrows": true,
 				"big-arrows": false,
-				"slider": false
+				"slider": true
 			},
 			"enable-if": "pose-estimation-enable"
 		},

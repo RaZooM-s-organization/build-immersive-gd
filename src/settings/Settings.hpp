@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../utils/Utils.hpp"
 
 #include <Geode/Geode.hpp>
 
@@ -10,7 +11,6 @@ using namespace geode::prelude;
 enum class VideoOutputLayer {
     BG, B5, B4, B3, B2, B1, B0, T1, T2, T3, T4
 };
-
 
 
 struct ModSettings {
@@ -55,21 +55,7 @@ struct ModSettings {
         // Video Output Settings
         m_videoOutput.m_enable = mod->getSettingValue<bool>("video-output-enable");
         m_videoOutput.m_fpsLimit = mod->getSettingValue<int>("video-output-fps-limit");
-        std::map<std::string, VideoOutputLayer> layer2enum = {
-            {"BG", VideoOutputLayer::BG},
-            {"B5", VideoOutputLayer::B5},
-            {"B4", VideoOutputLayer::B4},
-            {"B3", VideoOutputLayer::B3},
-            {"B2", VideoOutputLayer::B2},
-            {"B1", VideoOutputLayer::B1},
-            {"B0", VideoOutputLayer::B0},
-            {"T1", VideoOutputLayer::T1},
-            {"T2", VideoOutputLayer::T2},
-            {"T3", VideoOutputLayer::T3},
-            {"T4", VideoOutputLayer::T4}
-        };
-        auto it = layer2enum.find(mod->getSettingValue<std::string>("video-output-layer"));
-        m_videoOutput.m_layer = (it == layer2enum.end()) ? VideoOutputLayer::BG : it->second;
+        m_videoOutput.m_layer = str2enum(mod->getSettingValue<std::string>("video-output-layer"));
 
         // Pose Estimation Settings
         m_poseEstimation.m_enable = mod->getSettingValue<bool>("pose-estimation-enable");

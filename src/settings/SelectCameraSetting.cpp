@@ -4,17 +4,10 @@
 
 class SelectCameraSetting : public SettingBaseValueV3<std::string> {
 public:
-
-    // std::string m_deviceName;
-
     static Result<std::shared_ptr<SettingV3>> parse(std::string const& key, std::string const& modID, matjson::Value const& json) {
         auto res = std::make_shared<SelectCameraSetting>();
         auto root = checkJson(json, "SelectCameraSetting");
         res->parseBaseProperties(key, modID, root);
-
-        // if (auto val = root.has("device-name")) {
-        //     res->m_deviceName = val.json().asString().unwrapOrDefault();
-        // }
 
         return root.ok(std::static_pointer_cast<SettingV3>(res));
     }
