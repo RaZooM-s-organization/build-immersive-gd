@@ -1,6 +1,6 @@
 /lib
 /resources/models/*.onnx
-
+*.py
 
 # Prerequisites
 *.d

@@ -1,14 +1,20 @@
-#include "../popups/VideoPreviewPopup.hpp"
 #include "LevelInfoLayer.hpp"
 
+#include "../popups/VideoPreviewPopup.hpp"
+#include "../settings/Settings.hpp"
+
 #include <Geode/modify/PlayLayer.hpp>
+#include <Geode/modify/LevelEditorLayer.hpp>
 
 
 class $modify(MyPlayLayer, PlayLayer) {
 
     struct Fields {
         std::shared_ptr<CameraMan> m_cameraMan{};
+        std::shared_ptr<PoseEstimator> m_poseEstimator{};
+        VideoPlayer* m_videoplayer;
         bool m_enable{};
+        bool m_blockUserInputs{};
     };
 
 
@@ -41,117 +47,79 @@ class $modify(MyPlayLayer, PlayLayer) {
 
         // Here we have a working cameraMan
 
+        // todo: GPU, OBS greenscreen implementation
+
+        f->m_videoplayer = VideoPlayer::create(ClippingMode::Crop);
+        f->m_videoplayer->setContentSize(CCDirector::get()->getWinSize());
+        m_objectLayer->addChild(f->m_videoplayer, getTargetZOrder(ModSettings::get().m_videoOutput.m_layer));
+        
+
+        if (ModSettings::get().m_videoOutput.m_enable) { // show video on screen
+            auto videoFrame = VideoFrame::create(f->m_cameraMan);
+            f->m_videoplayer->addFrame(videoFrame);
+        }
+
+        if (ModSettings::get().m_poseEstimation.m_enable) { // control the game by pose
+            f->m_poseEstimator = std::make_shared<PoseEstimator>(f->m_cameraMan);
+
+            if (ModSettings::get().m_poseEstimation.m_debugDraw) { // show pose debug draw
+                auto poseFrame = PoseFrame::create(f->m_poseEstimator);
+                f->m_videoplayer->addFrame(poseFrame);
+            }
+
+            f->m_blockUserInputs = true;
+        }
+
+        schedule(schedule_selector(MyPlayLayer::updateVideoPosition));
 
         return true;
     }
 
-    // b is [0..5]
-    void hideLayerAndAllBelow(int b) {
-        switch (b) {
-            case 0: hideB0();
-            case 1: hideB1();
-            case 2: hideB2();
-            case 3: hideB3();
-            case 4: hideB4();
-            case 5: hideB5();
+
+    // it's scheduled only if the video is enabled
+    void updateVideoPosition(float) {
+        auto hws = CCDirector::get()->getWinSize() / 2;
+        auto scaledSz = hws / m_gameState.m_cameraZoom;
+        auto camCenterInEditor = m_gameState.m_cameraPosition + scaledSz;
+        auto videoPlayer = m_fields->m_videoplayer;
+        videoPlayer->setPosition(camCenterInEditor);
+        videoPlayer->setRotation(-m_gameState.m_cameraAngle);
+        videoPlayer->setScale(1 / m_gameState.m_cameraZoom);
+    }
+
+
+    // слой НАД которым будет картинка
+    int getTargetZOrder(VideoOutputLayer layer) {
+        switch (layer) {
+            case VideoOutputLayer::T4: return 1380;
+            case VideoOutputLayer::T3: return 970;
+            case VideoOutputLayer::T2: return 670;
+            case VideoOutputLayer::T1: return 370;
+            case VideoOutputLayer::B0: return 10;
+            case VideoOutputLayer::B1: return -10;
+            case VideoOutputLayer::B2: return -310;
+            case VideoOutputLayer::B3: return -610;
+            case VideoOutputLayer::B4: return -910;
+            case VideoOutputLayer::B5: return -1210;
+            default: return -1490; // bg
         }
-    }
-
-    void hideB0() {
-        // wtf is B0 layer
-        m_game2LayerB0->setVisible(false);
-        m_gameBlendingLayerB0->setVisible(false);
-        m_fireBlendingLayerB0->setVisible(false);
-        m_pixelBlendingLayerB0->setVisible(false);
-        m_particleBlendingLayerB0->setVisible(false);
-        m_game2BlendingLayerB0->setVisible(false);
-    }
-
-    void hideB1() {
-        m_gameLayerB1->setVisible(false);
-        m_gameBlendingLayerB1->setVisible(false);
-        m_glowLayerB1->setVisible(false);
-        m_specialLayerB1->setVisible(false);
-        m_textLayerB1->setVisible(false);
-        m_textBlendingLayerB1->setVisible(false);
-        m_fireLayerB1->setVisible(false);
-        m_fireBlendingLayerB1->setVisible(false);
-        m_pixelLayerB1->setVisible(false);
-        m_pixelBlendingLayerB1->setVisible(false);
-        m_particleLayerB1->setVisible(false);
-        m_particleBlendingLayerB1->setVisible(false);
-        m_game2LayerB1->setVisible(false);
-        m_game2BlendingLayerB1->setVisible(false);
-    }
-
-    void hideB2() {
-        m_gameLayerB2->setVisible(false);
-        m_gameBlendingLayerB2->setVisible(false);
-        m_glowLayerB2->setVisible(false);
-        m_specialLayerB2->setVisible(false);
-        m_textLayerB2->setVisible(false);
-        m_textBlendingLayerB2->setVisible(false);
-        m_fireLayerB2->setVisible(false);
-        m_fireBlendingLayerB2->setVisible(false);
-        m_pixelLayerB2->setVisible(false);
-        m_pixelBlendingLayerB2->setVisible(false);
-        m_particleLayerB2->setVisible(false);
-        m_particleBlendingLayerB2->setVisible(false);
-        m_game2LayerB2->setVisible(false);
-        m_game2BlendingLayerB2->setVisible(false);
-    }
-
-
-    void hideB3() {
-        m_gameLayerB3->setVisible(false);
-        m_gameBlendingLayerB3->setVisible(false);
-        m_glowLayerB3->setVisible(false);
-        m_specialLayerB3->setVisible(false);
-        m_textLayerB3->setVisible(false);
-        m_textBlendingLayerB3->setVisible(false);
-        m_fireLayerB3->setVisible(false);
-        m_fireBlendingLayerB3->setVisible(false);
-        m_pixelLayerB3->setVisible(false);
-        m_pixelBlendingLayerB3->setVisible(false);
-        m_particleLayerB3->setVisible(false);
-        m_particleBlendingLayerB3->setVisible(false);
-        m_game2LayerB3->setVisible(false);
-        m_game2BlendingLayerB3->setVisible(false);
-    }
-
-    void hideB4() {
-        m_gameLayerB4->setVisible(false);
-        m_gameBlendingLayerB4->setVisible(false);
-        m_glowLayerB4->setVisible(false);
-        m_specialLayerB4->setVisible(false);
-        m_textLayerB4->setVisible(false);
-        m_textBlendingLayerB4->setVisible(false);
-        m_fireLayerB4->setVisible(false);
-        m_fireBlendingLayerB4->setVisible(false);
-        m_pixelLayerB4->setVisible(false);
-        m_pixelBlendingLayerB4->setVisible(false);
-        m_particleLayerB4->setVisible(false);
-        m_particleBlendingLayerB4->setVisible(false);
-        m_game2LayerB4->setVisible(false);
-        m_game2BlendingLayerB4->setVisible(false);
-    }
-
-    void hideB5() {
-        m_gameLayerB5->setVisible(false);
-        m_gameBlendingLayerB5->setVisible(false);
-        m_glowLayerB5->setVisible(false);
-        m_specialLayerB5->setVisible(false);
-        m_textLayerB5->setVisible(false);
-        m_textBlendingLayerB5->setVisible(false);
-        m_fireLayerB5->setVisible(false);
-        m_fireBlendingLayerB5->setVisible(false);
-        m_pixelLayerB5->setVisible(false);
-        m_pixelBlendingLayerB5->setVisible(false);
-        m_particleLayerB5->setVisible(false);
-        m_particleBlendingLayerB5->setVisible(false);
-        m_game2LayerB5->setVisible(false);
-        m_game2BlendingLayerB5->setVisible(false);
     }
 
 
 };
+
+/*
+
+T5, min: 1074, max: 1360
+T4, min: 1010, max: 1340
+T3, min: 710, max: 960
+T2, min: 410, max: 660
+T1, min: 120, max: 360
+B0, min: -190, max: -5
+B1, min: -280, max: -20
+B2, min: -580, max: -320
+B3, min: -880, max: -620
+B4, min: -1180, max: -920
+B5, min: -1480, max: -1220
+
+*/

@@ -56,6 +56,11 @@ void VideoPreviewPopup::setupCameraPreview() {
     if (res.isOk()) {
         // add video frame
         m_videoFrame = VideoFrame::create(m_cameraMan);
+        // if (ModSettings::get().m_greenScreen.m_enable) {
+        //     m_videoFrame = VideoFrameAlpha::create(m_cameraMan);
+        // } else {
+        //     m_videoFrame = VideoFrame::create(m_cameraMan);
+        // }
         m_videoplayer->addFrame(m_videoFrame);
         // add pose m_videoFrame
         auto worker = std::make_shared<PoseEstimator>(m_cameraMan);

@@ -28,14 +28,14 @@ public:
 };
 
 
-class VideoFrameAlpha : public VideoFrame {
-public:
+// class VideoFrameAlpha : public VideoFrame {
+// public:
 
-    static VideoFrameAlpha* create(std::shared_ptr<CameraMan> cameraMan);
+//     static VideoFrameAlpha* create(std::shared_ptr<CameraMan> cameraMan);
 
-    virtual CCTexture2DPixelFormat getTexturePixelFormat() const override;
-    virtual std::unique_ptr<uint8_t[]> preprocessImageData(uint8_t* data, int w, int h) override;
+//     virtual CCTexture2DPixelFormat getTexturePixelFormat() const override;
+//     virtual std::unique_ptr<uint8_t[]> preprocessImageData(uint8_t* data, int w, int h) override;
 
-};
+// };
 
 
