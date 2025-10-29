@@ -92,11 +92,16 @@ jobs:
       - name: Repack the mod
         run: |
           mkdir -p build/resources/binaries/win
+          
           mv ./lib/onnxruntime/lib/*.dll ./build/resources/binaries/win
-          mv ./lib/ffmpeg/bin/avcodec.dll ./build/resources/binaries/win
-          mv ./lib/ffmpeg/bin/avdevice.dll ./build/resources/binaries/win
-          mv ./lib/ffmpeg/bin/swscale.dll ./build/resources/binaries/win
-          mv ./lib/ffmpeg/bin/avutil.dll ./build/resources/binaries/win
+
+          mv ./lib/ffmpeg/bin/avcodec*.dll ./build/resources/binaries/win
+          mv ./lib/ffmpeg/bin/avdevice*.dll ./build/resources/binaries/win
+          mv ./lib/ffmpeg/bin/swscale*.dll ./build/resources/binaries/win
+          mv ./lib/ffmpeg/bin/avutil*.dll ./build/resources/binaries/win
+
+          mv ./lib/ffmpeg/bin/avformat*.dll ./build/resources/binaries/win
+
           zip -ur ./build/razoom.s_pov.geode ./build/resources
 
 

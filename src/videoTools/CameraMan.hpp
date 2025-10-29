@@ -3,7 +3,7 @@
 #include "VideoTools.hpp"
 
 extern "C" {
-// #include <libavformat/avformat.h>
+#include <libavformat/avformat.h>
 #include <libavcodec/avcodec.h>
 // #include <libavfilter/avfilter.h>
 #include <libavdevice/avdevice.h>

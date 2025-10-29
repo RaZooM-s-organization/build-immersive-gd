@@ -34,7 +34,7 @@ set(FFMPEG_DIR ${CMAKE_SOURCE_DIR}/lib/ffmpeg)
 find_library(AVCODEC_LIB NAMES avcodec PATHS ${FFMPEG_DIR}/lib)
 find_library(AVDEVICE_LIB NAMES avdevice PATHS ${FFMPEG_DIR}/lib)
 # find_library(AVFILTER_LIB NAMES avfilter PATHS ${FFMPEG_DIR}/lib)
-# find_library(AVFORMAT_LIB NAMES avformat PATHS ${FFMPEG_DIR}/lib)
+find_library(AVFORMAT_LIB NAMES avformat PATHS ${FFMPEG_DIR}/lib)
 find_library(AVUTIL_LIB NAMES avutil PATHS ${FFMPEG_DIR}/lib)
 # find_library(SWRESAMPLE_LIB NAMES swresample PATHS ${FFMPEG_DIR}/lib)
 find_library(SWSCALE_LIB NAMES swscale PATHS ${FFMPEG_DIR}/lib)
@@ -57,7 +57,7 @@ target_link_libraries(${PROJECT_NAME}
     ${AVCODEC_LIB}
     ${AVDEVICE_LIB}
     # ${AVFILTER_LIB}
-    # ${AVFORMAT_LIB}
+    ${AVFORMAT_LIB}
     ${AVUTIL_LIB}
     # ${SWRESAMPLE_LIB}
     ${SWSCALE_LIB}
