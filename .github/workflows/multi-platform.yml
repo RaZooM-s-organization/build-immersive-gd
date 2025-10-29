@@ -8,48 +8,7 @@ on:
 
 jobs:
 
-  tmp_job:
-    name: Build for windows
-    runs-on: windows-latest
-    defaults:
-      run:
-        shell: powershell
-    
-    steps:
-    - run: |
-        echo '123' > A.txt
-        echo '456' > B.txt
-        7z a arc.zip *.txt
-        mkdir D
-        echo '789' > D/H.txt
-        7z a arc.zip D/H.txt
-
   build:
-
-    needs: ['tmp_job']
-
-    # strategy:
-    #   fail-fast: false
-    #   matrix:
-    #     config:
-    #     - name: Windows
-    #       os: windows-latest
-
-    #     - name: macOS
-    #       os: macos-latest
-
-    #     - name: iOS
-    #       os: macos-latest
-    #       target: iOS
-
-    #     - name: Android32
-    #       os: ubuntu-latest
-    #       target: Android32
-
-    #     - name: Android64
-    #       os: ubuntu-latest
-    #       target: Android64
-
 
     name: Build for windows
     runs-on: windows-latest
@@ -71,6 +30,7 @@ jobs:
             downloads/onnxruntime-win64.zip
 
           key: my_constant_key_v1
+
           # key: ${{ runner.os }}-downloads-${{ hashFiles('**/.github/workflows/multi-platform.yml') }}
           # restore-keys: ${{ runner.os }}-downloads-
 
@@ -132,52 +92,9 @@ jobs:
           cd ..
 
 
-      # - run: New-Item -ItemType Directory -Path "lib"
-
-      # - name: Download FFmpeg deps
-      #   # this build will be available at least for the next 2 years:
-      #   run: Invoke-WebRequest -Uri "https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2025-09-30-13-19/ffmpeg-N-121271-g74115b017c-win64-gpl-shared.zip" -OutFile "ffmpeg.zip"
-
-      # - name: Unzip FFmpeg lib
-      #   run: Expand-Archive -LiteralPath "ffmpeg.zip" -DestinationPath "lib" -Force
-
-      # - name: Rename FFmpeg lib
-      #   run: Rename-Item -Path lib\ffmpeg-N-121271-g74115b017c-win64-gpl-shared -NewName "ffmpeg"
-
-      # - name: Debug print
-      #   run: |
-      #     dir
-      #     dir src
-      #     dir lib
-      #     dir lib/ffmpeg
-      #     dir lib/ffmpeg/bin
-
-      # - name: Build the mod
-      #   uses: geode-sdk/build-geode-mod@main
-
-      # - name: Manually add ffmpeg deps to the .geode file resources
-      #   run: .\manual_deps.cmd build\razoom.videoplayer.geode 
-
       - uses: actions/upload-artifact@v4
         with:
           name: Build Output
-          path: ./build/razoom.videoplayer.geode
+          path: ./build/razoom.s_pov.geode
 
 
-
-
-
-
-  # package:
-  #   name: Package builds
-  #   runs-on: ubuntu-latest
-  #   needs: ['build']
-
-  #   steps:
-  #     - uses: geode-sdk/build-geode-mod/combine@main
-  #       id: build
-
-  #     - uses: actions/upload-artifact@v4
-  #       with:
-  #         name: Build Output
-  #         path: ${{ steps.build.outputs.build-output }}
