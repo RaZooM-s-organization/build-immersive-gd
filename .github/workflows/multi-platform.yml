@@ -32,40 +32,109 @@ jobs:
 
     name: Build for windows
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    
 
     steps:
       - uses: actions/checkout@v4
 
-      - run: New-Item -ItemType Directory -Path "lib"
+      - name: Cache downloads
+        id: cache-libs
+        uses: actions/cache@v4
+        with:
+          path: |
+            downloads/resources.tar.gz
+            downloads/ffmpeg.zip
+            downloads/onnxruntime-win64.zip
 
-      - name: Download FFmpeg deps
-        # this build will be available at least for the next 2 years:
-        run: Invoke-WebRequest -Uri "https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2025-09-30-13-19/ffmpeg-N-121271-g74115b017c-win64-gpl-shared.zip" -OutFile "ffmpeg.zip"
+          key: my_constant_key_v1
+          # key: ${{ runner.os }}-downloads-${{ hashFiles('**/.github/workflows/multi-platform.yml') }}
+          # restore-keys: ${{ runner.os }}-downloads-
 
-      - name: Unzip FFmpeg lib
-        run: Expand-Archive -LiteralPath "ffmpeg.zip" -DestinationPath "lib" -Force
-
-      - name: Rename FFmpeg lib
-        run: Rename-Item -Path lib\ffmpeg-N-121271-g74115b017c-win64-gpl-shared -NewName "ffmpeg"
-
-      - name: Debug print
+      - name: Download external files
+        if: steps.cache-libs.outputs.cache-hit != 'true'
         run: |
-          dir
-          dir src
-          dir lib
-          dir lib/ffmpeg
-          dir lib/ffmpeg/bin
+          mkdir -p downloads
+          cd downloads
+          curl "https://s3.ap-northeast-2.wasabisys.com/pinto-model-zoo/271_HRNet/resources.tar.gz" -o resources.tar.gz
+          curl "https://github.com/microsoft/onnxruntime/releases/download/v1.22.1/onnxruntime-win-x64-1.22.1.zip" -Lo onnxruntime-win64.zip
+          curl "https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2025-09-30-13-19/ffmpeg-N-121271-g74115b017c-win64-gpl-shared.zip" -Lo ffmpeg.zip
+          cd ..
+
+
+      - name: Unzip Files
+        run: |
+          mkdir -p unzipped
+          tar -zxvf ./downloads/resources.tar.gz -C ./unzipped
+          unzip ./downloads/onnxruntime-win64.zip -d ./unzipped
+          unzip ./downloads/ffmpeg.zip -d ./unzipped
+          ls -al unzipped
+
+
+      - name: Move files
+        run: |
+          mkdir lib
+
+          mv ./unzipped/onnxruntime-win-64-* ./lib/onnxruntime
+
+          mv ./unzipped/ffmpeg-N-* ./lib/ffmpeg
+
+          mkdir -p resources/models
+          mv ./unzipped/hrnet_coco_w32_256x192.onnx ./resources/models
+
 
       - name: Build the mod
         uses: geode-sdk/build-geode-mod@main
 
-      - name: Manually add ffmpeg deps to the .geode file resources
-        run: .\manual_deps.cmd build\razoom.videoplayer.geode 
+
+      - name: Repack the mod
+        run: |
+          mkdir -p build/resources/binaries/win
+          mv ./lib/onnxruntime/lib/*.dll ./build/resources/binaries/win
+          mv ./lib/ffmpeg/bin/avcodec.dll ./build/resources/binaries/win
+          mv ./lib/ffmpeg/bin/avdevice.dll ./build/resources/binaries/win
+          mv ./lib/ffmpeg/bin/swscale.dll ./build/resources/binaries/win
+          mv ./lib/ffmpeg/bin/avutil.dll ./build/resources/binaries/win
+          zip -ur ./build/razoom.s_pov.geode ./build/resources
+
+
+      # - run: New-Item -ItemType Directory -Path "lib"
+
+      # - name: Download FFmpeg deps
+      #   # this build will be available at least for the next 2 years:
+      #   run: Invoke-WebRequest -Uri "https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2025-09-30-13-19/ffmpeg-N-121271-g74115b017c-win64-gpl-shared.zip" -OutFile "ffmpeg.zip"
+
+      # - name: Unzip FFmpeg lib
+      #   run: Expand-Archive -LiteralPath "ffmpeg.zip" -DestinationPath "lib" -Force
+
+      # - name: Rename FFmpeg lib
+      #   run: Rename-Item -Path lib\ffmpeg-N-121271-g74115b017c-win64-gpl-shared -NewName "ffmpeg"
+
+      # - name: Debug print
+      #   run: |
+      #     dir
+      #     dir src
+      #     dir lib
+      #     dir lib/ffmpeg
+      #     dir lib/ffmpeg/bin
+
+      # - name: Build the mod
+      #   uses: geode-sdk/build-geode-mod@main
+
+      # - name: Manually add ffmpeg deps to the .geode file resources
+      #   run: .\manual_deps.cmd build\razoom.videoplayer.geode 
 
       - uses: actions/upload-artifact@v4
         with:
           name: Build Output
           path: ./build/razoom.videoplayer.geode
+
+
+
+
+
 
   # package:
   #   name: Package builds

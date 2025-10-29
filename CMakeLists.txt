@@ -33,15 +33,15 @@ set(FFMPEG_DIR ${CMAKE_SOURCE_DIR}/lib/ffmpeg)
 
 find_library(AVCODEC_LIB NAMES avcodec PATHS ${FFMPEG_DIR}/lib)
 find_library(AVDEVICE_LIB NAMES avdevice PATHS ${FFMPEG_DIR}/lib)
-find_library(AVFILTER_LIB NAMES avfilter PATHS ${FFMPEG_DIR}/lib)
-find_library(AVFORMAT_LIB NAMES avformat PATHS ${FFMPEG_DIR}/lib)
+# find_library(AVFILTER_LIB NAMES avfilter PATHS ${FFMPEG_DIR}/lib)
+# find_library(AVFORMAT_LIB NAMES avformat PATHS ${FFMPEG_DIR}/lib)
 find_library(AVUTIL_LIB NAMES avutil PATHS ${FFMPEG_DIR}/lib)
-find_library(SWRESAMPLE_LIB NAMES swresample PATHS ${FFMPEG_DIR}/lib)
+# find_library(SWRESAMPLE_LIB NAMES swresample PATHS ${FFMPEG_DIR}/lib)
 find_library(SWSCALE_LIB NAMES swscale PATHS ${FFMPEG_DIR}/lib)
 
 # add openCV and onnx packages
 
-find_package(OpenCV REQUIRED)
+# find_package(OpenCV REQUIRED)
 
 find_library(ONNX_RUNTIME_LIB NAMES onnxruntime PATHS ${CMAKE_SOURCE_DIR}/lib/onnxruntime/lib)
 
@@ -50,21 +50,22 @@ find_library(ONNX_RUNTIME_LIB NAMES onnxruntime PATHS ${CMAKE_SOURCE_DIR}/lib/on
 target_include_directories(${PROJECT_NAME} PRIVATE 
     ${FFMPEG_DIR}/include 
     lib/onnxruntime/include 
-    ${OpenCV_INCLUDE_DIRS}
+    # ${OpenCV_INCLUDE_DIRS}
 )
 
 target_link_libraries(${PROJECT_NAME} 
     ${AVCODEC_LIB}
     ${AVDEVICE_LIB}
-    ${AVFILTER_LIB}
-    ${AVFORMAT_LIB}
+    # ${AVFILTER_LIB}
+    # ${AVFORMAT_LIB}
     ${AVUTIL_LIB}
-    ${SWRESAMPLE_LIB}
+    # ${SWRESAMPLE_LIB}
     ${SWSCALE_LIB}
+
 
     ${ONNX_RUNTIME_LIB}
     
-    ${OpenCV_LIBRARIES}
+    # ${OpenCV_LIBRARIES}
 )
 
 setup_geode_mod(${PROJECT_NAME})
