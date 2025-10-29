@@ -77,7 +77,7 @@ jobs:
         run: |
           mkdir lib
 
-          mv ./unzipped/onnxruntime-win-64-* ./lib/onnxruntime
+          mv ./unzipped/onnxruntime-win-x64-* ./lib/onnxruntime
 
           mv ./unzipped/ffmpeg-N-* ./lib/ffmpeg
 
