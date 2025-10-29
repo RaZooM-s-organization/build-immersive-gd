@@ -7,7 +7,23 @@ on:
       - "**"
 
 jobs:
+
+  tmp_job:
+    name: Build for windows
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    
+    steps:
+    - run: |
+        which unzip
+        which zip
+
   build:
+
+    needs: ['tmp_job']
+
     # strategy:
     #   fail-fast: false
     #   matrix:
@@ -29,6 +45,7 @@ jobs:
     #     - name: Android64
     #       os: ubuntu-latest
     #       target: Android64
+
 
     name: Build for windows
     runs-on: windows-latest
@@ -92,7 +109,7 @@ jobs:
       - name: Repack the mod
         run: |
           mkdir -p build/resources/binaries/win
-          
+
           mv ./lib/onnxruntime/lib/*.dll ./build/resources/binaries/win
 
           mv ./lib/ffmpeg/bin/avcodec*.dll ./build/resources/binaries/win
@@ -102,7 +119,9 @@ jobs:
 
           mv ./lib/ffmpeg/bin/avformat*.dll ./build/resources/binaries/win
 
-          zip -ur ./build/razoom.s_pov.geode ./build/resources
+          cd build
+          zip -ur ./razoom.s_pov.geode ./resources
+          cd ..
 
 
       # - run: New-Item -ItemType Directory -Path "lib"

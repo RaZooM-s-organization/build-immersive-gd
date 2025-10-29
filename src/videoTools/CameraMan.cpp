@@ -41,7 +41,6 @@ Result<void, std::string> CameraMan::setupFFMPEG() {
     if (m_deviceName.empty()) {
         return Err("Video device not found");
     }
-    const char* device_name = ("video=" + m_deviceName).c_str();
 
     avdevice_register_all();
     
@@ -50,7 +49,7 @@ Result<void, std::string> CameraMan::setupFFMPEG() {
         return Err("'dshow' format not found");
     }
 
-    if (avformat_open_input(&fmt_ctx, device_name, input_fmt, nullptr) != 0) {
+    if (avformat_open_input(&fmt_ctx, ("video=" + m_deviceName).c_str(), input_fmt, nullptr) != 0) {
         return Err("Not able to open the device " + m_deviceName);
     }
     
