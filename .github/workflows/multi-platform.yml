@@ -13,12 +13,16 @@ jobs:
     runs-on: windows-latest
     defaults:
       run:
-        shell: bash
+        shell: powershell
     
     steps:
     - run: |
-        which unzip
-        which zip
+        echo '123' > A.txt
+        echo '456' > B.txt
+        7z a arc.zip *.txt
+        mkdir D
+        echo '789' > D/H.txt
+        7z a arc.zip D/H.txt
 
   build:
 
@@ -106,7 +110,7 @@ jobs:
         uses: geode-sdk/build-geode-mod@main
 
 
-      - name: Repack the mod
+      - name: Prepare files
         run: |
           mkdir -p build/resources/binaries/win
 
@@ -119,8 +123,12 @@ jobs:
 
           mv ./lib/ffmpeg/bin/avformat*.dll ./build/resources/binaries/win
 
+
+      - name: Repack the mod
+        shell: powershell
+        run: |
           cd build
-          zip -ur ./razoom.s_pov.geode ./resources
+          7z a ./razoom.s_pov.geode ./resources
           cd ..
 
 
