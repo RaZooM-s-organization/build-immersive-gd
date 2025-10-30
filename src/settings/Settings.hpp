@@ -32,6 +32,7 @@ struct ModSettings {
         int m_fpsLimit;
         bool m_useGPU;
         bool m_debugDraw;
+        bool m_disableInputs;
     } m_poseEstimation;
 
     // struct {
@@ -63,6 +64,7 @@ struct ModSettings {
         m_poseEstimation.m_fpsLimit = mod->getSettingValue<int64_t>("pose-estimation-video-output-fps-limit");
         m_poseEstimation.m_useGPU = mod->getSettingValue<bool>("pose-estimation-use-gpu");
         m_poseEstimation.m_debugDraw = mod->getSettingValue<bool>("pose-estimation-debug-draw");
+        m_poseEstimation.m_disableInputs = mod->getSettingValue<bool>("pose-estimation-disable-inputs");
 
         // Green Screen Settings
         // m_greenScreen.m_enable = mod->getSettingValue<bool>("green-screen-enable");
@@ -82,6 +84,7 @@ struct ModSettings {
 
 struct ModGlobal {
     
+    bool m_shouldBlockInputsInBaseGameLayer = false;
 
     static ModGlobal& get() {
         static ModGlobal instance;

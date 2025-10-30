@@ -138,6 +138,13 @@ void VideoPreviewPopup::setupCameraPreview() {
         playBtn->setVisible(false);
     }
 
+    // Capture pose button
+    auto capturePoseButton = CCMenuItemSpriteExtra::create(
+        ButtonSprite::create("Cap.", "goldFont.fnt", "GJ_button_01.png", 1),
+        this, menu_selector(VideoPreviewPopup::onCapturePoseButton)
+    );
+    m_buttonMenu->addChildAtPosition(capturePoseButton, Anchor::Left, ccp(30, -30));
+
 
     // FPS labels
     m_videoInfoLbl = CCLabelBMFont::create("", "goldFont.fnt");
@@ -151,6 +158,13 @@ void VideoPreviewPopup::setupCameraPreview() {
     m_mainLayer->addChild(m_poseInfoLbl);
     m_poseInfoLbl->setPosition(m_videoInfoLbl->getPosition() - ccp(0, 20));
 
+    // click label
+    m_clickLbl = CCLabelBMFont::create("Click!", "bigFont.fnt");
+    m_clickLbl->setScale(0.5);
+    m_clickLbl->setColor(ccc3(0, 255, 0));
+    m_clickLbl->setOpacity(0);
+    m_mainLayer->addChildAtPosition(m_clickLbl, Anchor::TopRight, ccp(-85, -18));
+    
 
     // pose debug labels
     auto dbgBase = CCNodeRGBA::create();
@@ -176,13 +190,13 @@ void VideoPreviewPopup::setupCameraPreview() {
 
     m_mainLayer->addChild(dbgBase, 5);
 
-    schedule(schedule_selector(VideoPreviewPopup::updateLabels), 0.5);
+    schedule(schedule_selector(VideoPreviewPopup::updateFpsLabels), 0.5);
     schedule(schedule_selector(VideoPreviewPopup::updateModeLabels), 0.2);
     
 }
 
 
-void VideoPreviewPopup::updateLabels(float) {
+void VideoPreviewPopup::updateFpsLabels(float) {
     bool videoEn = ModSettings::get().m_videoOutput.m_enable;
     auto videoLayer = ModSettings::get().m_videoOutput.m_layer;
     m_videoInfoLbl->setString(fmt::format("Video: {} | Layer: {} | FPS: {}", 
@@ -202,6 +216,31 @@ void VideoPreviewPopup::updateLabels(float) {
 void VideoPreviewPopup::updateModeLabels(float) {
 
 }
+
+
+void VideoPreviewPopup::onCapturePoseButton(CCObject* obj) {
+    // todo:
+    flashClickLabel();
+    scheduleOnce(schedule_selector(VideoPreviewPopup::printCurrentPose), 5);
+}
+
+
+void VideoPreviewPopup::flashClickLabel() {
+    m_clickLbl->stopActionByTag(2834);
+    m_clickLbl->setOpacity(255);
+    auto a = CCFadeOut::create(0.75);
+    a->setTag(2834);
+    m_clickLbl->runAction(a);
+}
+
+
+void VideoPreviewPopup::printCurrentPose(float) {
+    flashClickLabel();
+
+}
+
+
+
 
 
 void VideoPreviewPopup::onClose(CCObject* obj) {

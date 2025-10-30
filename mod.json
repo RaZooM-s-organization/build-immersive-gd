@@ -132,7 +132,14 @@
 			"type": "bool",
 			"name": "Show the pose",
 			"description": "Show estimated pose when playing a level. \n <cb>I promise to make it less ugly in the future</c>",
-			"default": false,
+			"default": true,
+			"enable-if": "pose-estimation-enable"
+		},
+		"pose-estimation-disable-inputs": {
+			"type": "bool",
+			"name": "Disable inputs",
+			"description": "Disable keyboard/mouse inputs while playing a level",
+			"default": true,
 			"enable-if": "pose-estimation-enable"
 		}
 

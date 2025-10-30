@@ -19,6 +19,7 @@ protected:
     CCLabelBMFont* m_poseInfoLbl;
     CCLabelBMFont* m_videoInfoLbl;
     CCLabelBMFont* m_debugLabel;
+    CCLabelBMFont* m_clickLbl;
 
     std::optional<IconType> m_selectedGameMode;
 
@@ -31,9 +32,12 @@ public:
     void onModSettings(CCObject*);
     void onModeButton(CCObject* obj);
     void onPlayButton(CCObject* obj);
+    void onCapturePoseButton(CCObject* obj);
 
-    void updateLabels(float);
+    void updateFpsLabels(float);
     void updateModeLabels(float);
+    void flashClickLabel();
+    void printCurrentPose(float);
 };
 
 

@@ -258,8 +258,6 @@ bool PoseEstimator::processFrame() {
 
     // update state
     m_latestPoseOwnership.lock();
-    m_latestPose.m_height = frame.m_height;
-    m_latestPose.m_width = frame.m_width;
     m_latestPose.m_id = frame.m_id;
     m_latestPose.m_points = points;
     m_latestPoseOwnership.unlock();
