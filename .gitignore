@@ -1,6 +1,7 @@
 /lib
 /resources/models/*.onnx
 *.py
+*.psd
 /downloads
 
 # Prerequisites
