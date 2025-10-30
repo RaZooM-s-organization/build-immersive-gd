@@ -3,7 +3,7 @@
 
 #include "../videoTools/VideoPlayer.hpp"
 #include "../videoTools/VideoFrame.hpp"
-#include "../nnTools/PoseFrame.hpp"
+#include "../pose/PoseFrame.hpp"
 
 
 class VideoPreviewPopup : public Popup<int> {

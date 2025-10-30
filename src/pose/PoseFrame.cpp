@@ -1,5 +1,4 @@
 #include "PoseFrame.hpp"
-#include "PoseEstimator.hpp"
 
 PoseFrame* PoseFrame::create(std::shared_ptr<PoseEstimator> worker){
     auto ret = new PoseFrame;

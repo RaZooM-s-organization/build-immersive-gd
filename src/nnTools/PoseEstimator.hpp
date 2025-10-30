@@ -1,11 +1,16 @@
 #pragma once
 
-#include "NNTools.hpp"
-
 #include "../videoTools/CameraMan.hpp"
 #include "../utils/FpsLimiter.hpp"
 
 #include <onnxruntime_cxx_api.h>
+
+
+struct PoseResult {
+    uint32_t m_id{};
+    // points in source image pixel coords from bottom left
+    std::map<int, CCPoint> m_points{};
+};
 
 
 class PoseEstimator {

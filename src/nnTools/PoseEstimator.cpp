@@ -113,6 +113,7 @@ PoseEstimator::PoseEstimator(std::shared_ptr<CameraMan> cameraman) {
     m_sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
 
     if (useCuda) {
+        // todo: check that the onnx runtime lib for cuda is in resources
         OrtCUDAProviderOptions cudaOptions{};
         m_sessionOptions.AppendExecutionProvider_CUDA(cudaOptions);
         // todo: check, maybe use Ort::MemoryInfo::CreateCpu
