@@ -1,2 +1,5 @@
 # 1.0.0
-- Edit this file to change your mod's changelog.
+- Camera inside the game
+- Pose estimation
+- Control the game with your pose
+- 

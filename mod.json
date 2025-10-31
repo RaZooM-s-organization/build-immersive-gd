@@ -12,7 +12,7 @@
 	"developer": "RaZooM",
 	"description": "Get inside the GD and control it with your body!",
 
-	"tags": ["gameplay", "content", "modtober25"],
+	"tags": ["gameplay", "content", "modtober25", "joke"],
 
 	"dependencies": {
 		"geode.node-ids": ">=v1.20.0"
@@ -25,6 +25,11 @@
 		"sprites": [
 			"resources/*.png"
 		]
+	},
+
+	"links": {
+		"source": "https://github.com/RazoomGD/geode-modtober-25-mod",
+		"community": "https://discord.gg/wcWvtKHP8n"
 	},
 
 	"settings": {

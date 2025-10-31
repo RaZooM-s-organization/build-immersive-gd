@@ -66,7 +66,7 @@ struct ModSettings {
         m_poseEstimation.m_useGPU = false;
         m_poseEstimation.m_debugDraw = mod->getSettingValue<bool>("pose-estimation-debug-draw");
         m_poseEstimation.m_disableInputs = mod->getSettingValue<bool>("pose-estimation-disable-inputs");
-
+        
         // Green Screen Settings
         // m_greenScreen.m_enable = mod->getSettingValue<bool>("green-screen-enable");
         // m_greenScreen.m_color = mod->getSettingValue<ccColor3B>("green-screen-color");

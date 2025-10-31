@@ -149,6 +149,7 @@ void VideoPreviewPopup::setupCameraPreview() {
         this, menu_selector(VideoPreviewPopup::onCapturePoseButton)
     );
     m_buttonMenu->addChildAtPosition(capturePoseButton, Anchor::Left, ccp(30, -30));
+    capturePoseButton->setVisible(false);
 
 
     // FPS labels
