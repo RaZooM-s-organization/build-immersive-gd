@@ -72,16 +72,18 @@ jobs:
 
       - name: Prepare files
         run: |
-          mkdir -p build/resources/binaries/win
+          mkdir -p build/resources/razoom.s_pov/binaries/win
 
-          mv ./lib/onnxruntime/lib/*.dll ./build/resources/binaries/win
+          mv ./lib/onnxruntime/lib/*.dll ./build/resources/razoom.s_pov/binaries/win
 
-          mv ./lib/ffmpeg/bin/avcodec*.dll ./build/resources/binaries/win
-          mv ./lib/ffmpeg/bin/avdevice*.dll ./build/resources/binaries/win
-          mv ./lib/ffmpeg/bin/swscale*.dll ./build/resources/binaries/win
-          mv ./lib/ffmpeg/bin/avutil*.dll ./build/resources/binaries/win
+          mv ./lib/ffmpeg/bin/avcodec*.dll ./build/resources/razoom.s_pov/binaries/win
+          mv ./lib/ffmpeg/bin/avdevice*.dll ./build/resources/razoom.s_pov/binaries/win
+          mv ./lib/ffmpeg/bin/swscale*.dll ./build/resources/razoom.s_pov/binaries/win
+          mv ./lib/ffmpeg/bin/avutil*.dll ./build/resources/razoom.s_pov/binaries/win
+          mv ./lib/ffmpeg/bin/swresample*.dll ./build/resources/razoom.s_pov/binaries/win
+          mv ./lib/ffmpeg/bin/avfilter*.dll ./build/resources/razoom.s_pov/binaries/win
 
-          mv ./lib/ffmpeg/bin/avformat*.dll ./build/resources/binaries/win
+          mv ./lib/ffmpeg/bin/avformat*.dll ./build/resources/razoom.s_pov/binaries/win
 
 
       - name: Repack the mod

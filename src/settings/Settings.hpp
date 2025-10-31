@@ -62,7 +62,8 @@ struct ModSettings {
         m_poseEstimation.m_enable = mod->getSettingValue<bool>("pose-estimation-enable");
         m_poseEstimation.m_numOfThreads = mod->getSettingValue<int64_t>("pose-estimation-num-of-threads");
         m_poseEstimation.m_fpsLimit = mod->getSettingValue<int64_t>("pose-estimation-video-output-fps-limit");
-        m_poseEstimation.m_useGPU = mod->getSettingValue<bool>("pose-estimation-use-gpu");
+        // m_poseEstimation.m_useGPU = mod->getSettingValue<bool>("pose-estimation-use-gpu");
+        m_poseEstimation.m_useGPU = false;
         m_poseEstimation.m_debugDraw = mod->getSettingValue<bool>("pose-estimation-debug-draw");
         m_poseEstimation.m_disableInputs = mod->getSettingValue<bool>("pose-estimation-disable-inputs");
 
@@ -144,6 +145,14 @@ struct ModGlobal {
 	"enable-if": "green-screen-enable"
 }
 
+
+"pose-estimation-use-gpu": {
+	"type": "bool",
+	"name": "Use GPU (only NVIDIA supported)",
+	"description": "Use GPU to speed up the neural network computations. \n <co>Don't enable if you don't have an NVIDIA GPU</c>\n<cg>But if you have it, I highly recommend enabling this option!</c>",
+	"default": false,
+	"enable-if": "pose-estimation-enable"
+},
 
 
 */

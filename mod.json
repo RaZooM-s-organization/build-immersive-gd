@@ -126,13 +126,7 @@
 			},
 			"enable-if": "pose-estimation-enable"
 		},
-		"pose-estimation-use-gpu": {
-			"type": "bool",
-			"name": "Use GPU (only NVIDIA supported)",
-			"description": "Use GPU to speed up the neural network computations. \n <co>Don't enable if you don't have an NVIDIA GPU</c>\n<cg>But if you have it, I highly recommend enabling this option!</c>",
-			"default": false,
-			"enable-if": "pose-estimation-enable"
-		},
+		
 		"pose-estimation-debug-draw": {
 			"type": "bool",
 			"name": "Show the pose",
