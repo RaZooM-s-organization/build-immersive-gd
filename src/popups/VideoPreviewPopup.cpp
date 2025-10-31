@@ -63,8 +63,8 @@ void VideoPreviewPopup::setupCameraPreview() {
         // }
         m_videoplayer->addFrame(m_videoFrame);
         // add pose m_videoFrame
-        auto worker = std::make_shared<PoseEstimator>(m_cameraMan);
-        m_poseFrame = PoseFrame::create(worker);
+        m_poseEstimator = std::make_shared<PoseEstimator>(m_cameraMan);
+        m_poseFrame = PoseFrame::create(m_poseEstimator);
         m_videoplayer->addFrame(m_poseFrame);
     } else {
         m_videoplayer->addFrame(ErrorFrame::create(res.unwrapErr()));
@@ -167,16 +167,14 @@ void VideoPreviewPopup::setupCameraPreview() {
     
 
     // pose debug labels
-    auto dbgBase = CCNodeRGBA::create();
-    dbgBase->setPosition(m_videoplayer->getPosition());
-    dbgBase->setContentSize(m_videoplayer->getScaledContentSize());
-    dbgBase->setAnchorPoint({0.5,0.5});
+    m_dbgBase = CCNodeRGBA::create();
+    m_dbgBase->setPosition(m_videoplayer->getPosition());
+    m_dbgBase->setContentSize(m_videoplayer->getScaledContentSize());
+    m_dbgBase->setAnchorPoint({0.5,0.5});
 
-    m_debugLabel = CCLabelBMFont::create("Cube:", "bigFont.fnt");
-    m_debugLabel->setScale(0.3);
-    dbgBase->setCascadeOpacityEnabled(true);
-    dbgBase->addChild(m_debugLabel);
-    dbgBase->setLayout(AxisLayout::create(Axis::Column)
+    
+    m_dbgBase->setCascadeOpacityEnabled(true);
+    m_dbgBase->setLayout(AxisLayout::create(Axis::Column)
         ->setGrowCrossAxis(true)
         ->setAutoScale(false)
         ->setCrossAxisOverflow(false)
@@ -186,12 +184,12 @@ void VideoPreviewPopup::setupCameraPreview() {
         ->setAxisReverse(true)
         ->setCrossAxisReverse(true)
     );
-    dbgBase->setOpacity(100);
+    m_dbgBase->setOpacity(100);
 
-    m_mainLayer->addChild(dbgBase, 5);
+    m_mainLayer->addChild(m_dbgBase, 5);
 
     schedule(schedule_selector(VideoPreviewPopup::updateFpsLabels), 0.5);
-    schedule(schedule_selector(VideoPreviewPopup::updateModeLabels), 0.2);
+    schedule(schedule_selector(VideoPreviewPopup::updatePoseResolver), 0.1);
     
 }
 
@@ -213,30 +211,79 @@ void VideoPreviewPopup::updateFpsLabels(float) {
 }
 
 
-void VideoPreviewPopup::updateModeLabels(float) {
+void VideoPreviewPopup::updatePoseResolver(float) {
+    if (!m_poseEstimator || !m_selectedGameMode) return;
 
+    auto currPose = Pose(m_poseEstimator->getPendingPoseResult().m_points);
+
+    auto res = m_poseResolver.nextPose(m_selectedGameMode.value(), currPose);
+
+    updateScoresLabels(currPose);
+
+    if (res) {
+        showPlayerClick(res.value().second);
+    }
 }
+
+
+void VideoPreviewPopup::updateScoresLabels(Pose pose) {
+    if (!m_poseEstimator || !m_selectedGameMode) return;
+    auto scores = m_poseResolver.getScores(m_selectedGameMode.value(), pose);
+
+    m_dbgBase->removeAllChildren();
+
+    for (auto s : scores) {
+        auto lbl = CCLabelBMFont::create(
+            fmt::format("{}: {}", s.first, std::round(s.second * 100)).c_str(),
+            "bigFont.fnt"
+        );
+        lbl->setScale(0.3);
+        m_dbgBase->addChild(lbl);
+    }
+
+    m_dbgBase->updateLayout();
+    m_dbgBase->setOpacity(100);
+}
+
+
 
 
 void VideoPreviewPopup::onCapturePoseButton(CCObject* obj) {
-    // todo:
-    flashClickLabel();
-    scheduleOnce(schedule_selector(VideoPreviewPopup::printCurrentPose), 5);
+    showPlayerClick();
+    scheduleOnce(schedule_selector(VideoPreviewPopup::debugPrintCurrentPose), 5);
 }
 
 
-void VideoPreviewPopup::flashClickLabel() {
-    m_clickLbl->stopActionByTag(2834);
-    m_clickLbl->setOpacity(255);
-    auto a = CCFadeOut::create(0.75);
-    a->setTag(2834);
-    m_clickLbl->runAction(a);
+void VideoPreviewPopup::showPlayerClick(PlayerAction action) {
+    switch (action) {
+        case PlayerAction::Click: {
+            m_clickLbl->stopActionByTag(1111);
+            m_clickLbl->setOpacity(255);
+            auto a = CCFadeOut::create(0.75);
+            a->setTag(1111);
+            m_clickLbl->runAction(a);
+            break;
+        }
+        case PlayerAction::Hold: {
+            m_clickLbl->stopActionByTag(1111);
+            m_clickLbl->setOpacity(255);
+            break;
+        }
+        default: { // none
+            if (m_clickLbl->getActionByTag(1111) == nullptr) {
+                m_clickLbl->setOpacity(0);
+            }
+            break;
+        }
+    }
 }
 
 
-void VideoPreviewPopup::printCurrentPose(float) {
-    flashClickLabel();
-
+void VideoPreviewPopup::debugPrintCurrentPose(float) {
+    showPlayerClick();
+    if (!m_poseEstimator || !m_selectedGameMode) return;
+    auto currPose = Pose(m_poseEstimator->getPendingPoseResult().m_points);
+    currPose.debugPrint();
 }
 
 

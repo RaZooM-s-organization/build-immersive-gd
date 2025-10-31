@@ -42,11 +42,33 @@ Pose::Pose(std::map<int, CCPoint> points) {
     }
 }
 
-float PoseActionPrototype::getSimilarityRatio(const Pose &other) const {
-    return 0;
+Pose::Pose(std::map<Bone, float> bones) {
+    m_bones = bones;
 }
 
-PlayerAction PoseActionPrototype::transitionToPose(PoseId prev) const {
+
+// returns 0..1
+float PosePrototype::getSimilarityRatio(const Pose &other) const {
+    
+    // todo: not working
+
+    auto sum2 = 0;
+    auto count = this->m_pose.m_bones.size();
+
+    for (auto& [bone, thisAngle] : this->m_pose.m_bones) {
+        auto it = other.m_bones.find(bone);
+        if (it != other.m_bones.end()) {
+            float otherAngle = it->second;
+            float d = angleDiff(thisAngle, otherAngle);
+            d = d / std::numbers::pi; // normalize
+            sum2 += d * d;
+        }
+    }
+
+    return std::sqrt(sum2 / count);
+}
+
+PlayerAction PosePrototype::transitionToPose(PoseId prev) const {
     auto it = m_actions.find(prev);
     if (it != m_actions.end()) {
         return it->second;
@@ -56,4 +78,24 @@ PlayerAction PoseActionPrototype::transitionToPose(PoseId prev) const {
         return it->second;
     }
     return PlayerAction::None;
+}
+
+void Pose::debugPrint() {
+    std::map<Pose::Bone, const char*> mappings = {
+        {Pose::Bone::Bone_5_7, "Bone_5_7"},
+        {Pose::Bone::Bone_6_8, "Bone_6_8"},
+        {Pose::Bone::Bone_7_9, "Bone_7_9"},
+        {Pose::Bone::Bone_8_10, "Bone_8_10"}
+    };
+    
+    std::string s;
+    
+    for (auto [bone, angle] : m_bones) {
+        s += mappings[bone];
+        s += ": ";
+        s += std::to_string(angle);
+        s += ", ";
+    }
+    
+    log::info("Pose: {}", s);
 }

@@ -1,26 +1,17 @@
 #pragma once
 
-#include "../nnTools/PoseEstimator.hpp"
 #include "Pose.hpp"
 
 
-// Takes the data from the pose estimator, processes it, and calls 
-// the callback when player needs to jump
-class PoseResolver : public CCNode {
+class PoseResolver {
 
-    std::shared_ptr<PoseEstimator> m_poseEstimator;
-    std::function<void(PlayerAction)> m_actionCallback;
-    IconType m_mode;
-    PoseId m_currentPoseId;
+    PoseId m_currentPoseId = PoseId::Any;
 
 public:
 
-    static PoseResolver* create(std::shared_ptr<PoseEstimator> worker, std::function<void(PlayerAction)> actionCallback);
-    bool init(std::shared_ptr<PoseEstimator> worker, std::function<void(PlayerAction)> actionCallback);
+    // return nullopt if pose did not change since the last update
+    std::optional<std::pair<PoseId, PlayerAction>> nextPose(IconType mode, Pose pose);
 
-    void update(float delta) override;
-
-    void setGameMode(IconType mode);
-
+    std::vector<std::pair<const char*, float>> getScores(IconType mode, Pose pose);
 };
 

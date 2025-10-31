@@ -8,9 +8,11 @@
 	},
 	"id": "razoom.s_pov",
 	"name": "RaZooM's POV",
-	"version": "v1.0.0",
+	"version": "v1.0.0-beta",
 	"developer": "RaZooM",
-	"description": "ghjkl",
+	"description": "Get inside the GD and control it with your body!",
+
+	"tags": ["gameplay", "content", "modtober25"],
 
 	"dependencies": {
 		"geode.node-ids": ">=v1.20.0"

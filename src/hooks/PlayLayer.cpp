@@ -70,9 +70,22 @@ class $modify(MyPlayLayer, PlayLayer) {
             f->m_blockUserInputs = true;
         }
 
+        if (ModSettings::get().m_poseEstimation.m_disableInputs) {
+            ModGlobal::get().m_shouldBlockInputsInBaseGameLayer = true;
+        }
+
         schedule(schedule_selector(MyPlayLayer::updateVideoPosition));
+        schedule(schedule_selector(MyPlayLayer::updatePoseResolve));
 
         return true;
+    }
+
+
+    void handleButtonForce(bool down, int button = 1, bool isPlayer1 = true) {
+        bool tmp = ModGlobal::get().m_shouldBlockInputsInBaseGameLayer;
+        ModGlobal::get().m_shouldBlockInputsInBaseGameLayer = false;
+        handleButton(down, button, isPlayer1);
+        ModGlobal::get().m_shouldBlockInputsInBaseGameLayer = tmp;
     }
 
 
@@ -85,6 +98,11 @@ class $modify(MyPlayLayer, PlayLayer) {
         videoPlayer->setPosition(camCenterInEditor);
         videoPlayer->setRotation(-m_gameState.m_cameraAngle);
         videoPlayer->setScale(1 / m_gameState.m_cameraZoom);
+    }
+
+
+    void updatePoseResolve(float) {
+        // todo:
     }
 
 

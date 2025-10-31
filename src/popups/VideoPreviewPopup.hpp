@@ -4,7 +4,7 @@
 #include "../videoTools/VideoPlayer.hpp"
 #include "../videoTools/VideoFrame.hpp"
 #include "../pose/PoseFrame.hpp"
-
+#include "../pose/PoseResolver.hpp"
 
 class VideoPreviewPopup : public Popup<int> {
 protected:
@@ -15,13 +15,15 @@ protected:
     PoseFrame* m_poseFrame{};
     
     std::shared_ptr<CameraMan> m_cameraMan{};
+    std::shared_ptr<PoseEstimator> m_poseEstimator{};
 
     CCLabelBMFont* m_poseInfoLbl;
     CCLabelBMFont* m_videoInfoLbl;
-    CCLabelBMFont* m_debugLabel;
     CCLabelBMFont* m_clickLbl;
+    CCNodeRGBA* m_dbgBase;
 
     std::optional<IconType> m_selectedGameMode;
+    PoseResolver m_poseResolver;
 
 public:
     static VideoPreviewPopup* create();
@@ -35,9 +37,10 @@ public:
     void onCapturePoseButton(CCObject* obj);
 
     void updateFpsLabels(float);
-    void updateModeLabels(float);
-    void flashClickLabel();
-    void printCurrentPose(float);
+    void updatePoseResolver(float);
+    void showPlayerClick(PlayerAction action = PlayerAction::Click);
+    void debugPrintCurrentPose(float);
+    void updateScoresLabels(Pose pose);
 };
 
 

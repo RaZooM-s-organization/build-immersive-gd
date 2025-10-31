@@ -5,12 +5,12 @@
 using namespace geode::prelude;
 
 
-#include <unordered_map>
+#include <map>
 
 
 enum class PoseId {
     Any,
-    ForearmsUp,
+    Cube_ForearmsUp,
 
 };
 
@@ -27,21 +27,25 @@ struct Pose {
         Bone_6_8, Bone_8_10
     };
 
-    Pose(std::map<int, CCPoint> points);
+    Pose(std::map<int, CCPoint> points); // from points to bones
+    Pose(std::map<Bone, float> bones);
+    Pose() = default;
 
-    std::unordered_map<Bone, float> m_bones;
+    std::map<Bone, float> m_bones;
+
+    void debugPrint();
 };
 
 
 // Store known poses in this struct
-struct PoseActionPrototype {
+struct PosePrototype {
     const PoseId m_id;
     const char* m_name;
 
     const Pose m_pose;
 
     // Actions performed on transition from previous pose to this one
-    const std::unordered_map<PoseId, PlayerAction> m_actions;
+    const std::map<PoseId, PlayerAction> m_actions;
 
     float getSimilarityRatio(const Pose &other) const;
     PlayerAction transitionToPose(PoseId prev) const;
@@ -49,3 +53,5 @@ struct PoseActionPrototype {
 };
 
 
+
+std::map<IconType, std::vector<PosePrototype>> const& getPoseData();

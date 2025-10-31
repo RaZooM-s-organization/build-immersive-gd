@@ -1,3 +1,7 @@
-# Template Mod
+# RaZooM's POV
 
-Edit about.md to change this
+<cy>Get inside the GD and control it with your body!</c>
+
+What the heck!? <-- вставить ссылку здесь
+
+
