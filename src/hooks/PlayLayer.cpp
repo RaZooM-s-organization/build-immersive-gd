@@ -1,6 +1,6 @@
 #include "LevelInfoLayer.hpp"
 #include "EditLevelLayer.hpp"
-#include "GJBaseGameLayer.cpp"
+#include "GJBaseGameLayer.hpp"
 
 #include "../popups/VideoPreviewPopup.hpp"
 #include "../settings/Settings.hpp"
