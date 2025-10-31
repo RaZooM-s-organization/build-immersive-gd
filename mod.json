@@ -21,6 +21,9 @@
 	"resources": {
 		"files": [
 			"resources/models/hrnet_coco_w32_256x192.onnx"
+		],
+		"sprites": [
+			"resources/*.png"
 		]
 	},
 

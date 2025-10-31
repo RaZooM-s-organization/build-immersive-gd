@@ -4,8 +4,12 @@
 #include "../nnTools/PoseEstimator.hpp"
 #include "../settings/Settings.hpp"
 #include "../hooks/LevelInfoLayer.hpp"
+#include "../hooks/EditLevelLayer.hpp"
 
 #include <Geode/ui/GeodeUI.hpp>
+
+
+#define DEBUG_LABELS_OPACITY 150
 
 
 VideoPreviewPopup* VideoPreviewPopup::create() {
@@ -135,7 +139,7 @@ void VideoPreviewPopup::setupCameraPreview() {
         playBtnSpr, this, menu_selector(VideoPreviewPopup::onPlayButton)
     );
     m_buttonMenu->addChildAtPosition(playBtn, Anchor::BottomRight, ccp(-47,47));
-    if (CCScene::get()->getChildByType<LevelInfoLayer>(0) == nullptr) {
+    if (CCScene::get()->getChildByType<LevelInfoLayer>(0) == nullptr && CCScene::get()->getChildByType<EditLevelLayer>(0) == nullptr) {
         playBtn->setVisible(false);
     }
 
@@ -185,7 +189,7 @@ void VideoPreviewPopup::setupCameraPreview() {
         ->setAxisReverse(true)
         ->setCrossAxisReverse(true)
     );
-    m_dbgBase->setOpacity(100);
+    m_dbgBase->setOpacity(DEBUG_LABELS_OPACITY);
 
     m_mainLayer->addChild(m_dbgBase, 5);
 
@@ -244,7 +248,7 @@ void VideoPreviewPopup::updateScoresLabels(Pose pose) {
     }
 
     m_dbgBase->updateLayout();
-    m_dbgBase->setOpacity(100);
+    m_dbgBase->setOpacity(DEBUG_LABELS_OPACITY);
 }
 
 
@@ -349,5 +353,8 @@ void VideoPreviewPopup::onPlayButton(CCObject* btn) {
     if (auto infoLayer = CCScene::get()->getChildByType<LevelInfoLayer>(0)) {
         onClose(nullptr);
         reinterpret_cast<MyLevelInfoLayer*>(infoLayer)->onPlayRaZooM(m_cameraMan);
+    } else if (auto infoLayer = CCScene::get()->getChildByType<EditLevelLayer>(0)) {
+        onClose(nullptr);
+        reinterpret_cast<MyEditLevelLayer*>(infoLayer)->onPlayRaZooM(m_cameraMan);
     }
 }

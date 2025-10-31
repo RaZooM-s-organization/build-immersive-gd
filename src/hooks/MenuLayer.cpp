@@ -7,25 +7,10 @@ using namespace geode::prelude;
 
 
 
-// todo: rm this
+// class $modify(MenuLayer) {
 
-class $modify(MenuLayer) {
-    bool init() {
-        if (!MenuLayer::init()) return false;
+//     void onMoreGames(CCObject* sender) {
+//         VideoPreviewPopup::create()->show();
+//     }
 
-        // auto vp = VideoPlayer::create();
-        // vp->setPosition(CCDirector::get()->getWinSize() / 2);
-        // this->addChild(vp);
-
-        
-
-
-        return true;
-    }
-
-    void onMoreGames(CCObject* sender) {
-        
-        VideoPreviewPopup::create()->show();
-    }
-
-};
+// };

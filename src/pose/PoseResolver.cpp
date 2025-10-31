@@ -39,8 +39,12 @@ std::optional<std::pair<PoseId, PlayerAction>> PoseResolver::nextPose(IconType m
         return std::nullopt;
     }
 
-    PlayerAction action = nextPose.transitionToPose(m_currentPoseId);
+    PlayerAction action = nextPose.transitionToPose(m_lastNotNonePoseId);
+    
     m_currentPoseId = nextPose.m_id;
+    if (nextPose.m_id != PoseId::Any) {
+        m_lastNotNonePoseId = nextPose.m_id;
+    }
 
     return {{m_currentPoseId, action}};
 }
@@ -61,5 +65,11 @@ std::vector<std::pair<const char*, float>> PoseResolver::getScores(IconType mode
 
     return ret;
 }
+
+
+void PoseResolver::reset() {
+    m_currentPoseId = PoseId::Any;
+}
+
 
 

@@ -1,7 +1,10 @@
 #include "LevelInfoLayer.hpp"
+#include "EditLevelLayer.hpp"
+#include "GJBaseGameLayer.cpp"
 
 #include "../popups/VideoPreviewPopup.hpp"
 #include "../settings/Settings.hpp"
+#include "../pose/PoseResolver.hpp"
 
 #include <Geode/modify/PlayLayer.hpp>
 #include <Geode/modify/LevelEditorLayer.hpp>
@@ -13,20 +16,31 @@ class $modify(MyPlayLayer, PlayLayer) {
         std::shared_ptr<CameraMan> m_cameraMan{};
         std::shared_ptr<PoseEstimator> m_poseEstimator{};
         VideoPlayer* m_videoplayer;
+        PoseResolver m_poseResolver;
         bool m_enable{};
-        bool m_blockUserInputs{};
+        bool m_isButtonDown{};
     };
 
 
     bool init(GJGameLevel* level, bool useReplay, bool dontCreateObjects) {
         if (!PlayLayer::init(level, useReplay, dontCreateObjects)) return false;
 
+        ModGlobal::get().m_shouldBlockInputsInBaseGameLayer = false;
+
         auto f = m_fields.self();
 
+        // from LevelInfoLayer
         if (auto levelInfo = CCScene::get()->getChildByType<LevelInfoLayer>(0)) {
             auto levelInfoFields = reinterpret_cast<MyLevelInfoLayer*>(levelInfo)->m_fields.self();
             f->m_cameraMan = levelInfoFields->m_cameraMan;
             f->m_enable = levelInfoFields->m_shouldEnableTheModOnPlayLayer;
+        }
+
+        // from EditLevelLayer
+        if (auto editLevel = CCScene::get()->getChildByType<EditLevelLayer>(0)) {
+            auto editLevelFields = reinterpret_cast<MyEditLevelLayer*>(editLevel)->m_fields.self();
+            f->m_cameraMan = editLevelFields->m_cameraMan;
+            f->m_enable = editLevelFields->m_shouldEnableTheModOnPlayLayer;
         }
 
         if (!f->m_enable) {
@@ -57,6 +71,8 @@ class $modify(MyPlayLayer, PlayLayer) {
         if (ModSettings::get().m_videoOutput.m_enable) { // show video on screen
             auto videoFrame = VideoFrame::create(f->m_cameraMan);
             f->m_videoplayer->addFrame(videoFrame);
+
+            schedule(schedule_selector(MyPlayLayer::updateVideoPosition));
         }
 
         if (ModSettings::get().m_poseEstimation.m_enable) { // control the game by pose
@@ -67,25 +83,33 @@ class $modify(MyPlayLayer, PlayLayer) {
                 f->m_videoplayer->addFrame(poseFrame);
             }
 
-            f->m_blockUserInputs = true;
-        }
+            if (ModSettings::get().m_poseEstimation.m_disableInputs) {
+                ModGlobal::get().m_shouldBlockInputsInBaseGameLayer = true;
+            }
 
-        if (ModSettings::get().m_poseEstimation.m_disableInputs) {
-            ModGlobal::get().m_shouldBlockInputsInBaseGameLayer = true;
+            schedule(schedule_selector(MyPlayLayer::updatePoseResolve));
         }
-
-        schedule(schedule_selector(MyPlayLayer::updateVideoPosition));
-        schedule(schedule_selector(MyPlayLayer::updatePoseResolve));
 
         return true;
     }
 
 
     void handleButtonForce(bool down, int button = 1, bool isPlayer1 = true) {
+        auto f = m_fields.self();
+        if (down == f->m_isButtonDown) return;
+
         bool tmp = ModGlobal::get().m_shouldBlockInputsInBaseGameLayer;
         ModGlobal::get().m_shouldBlockInputsInBaseGameLayer = false;
         handleButton(down, button, isPlayer1);
         ModGlobal::get().m_shouldBlockInputsInBaseGameLayer = tmp;
+
+        f->m_isButtonDown = down;
+    }
+
+    void resetLevel() {
+        m_fields->m_isButtonDown = false;
+        m_fields->m_poseResolver.reset();
+        PlayLayer::resetLevel();
     }
 
 
@@ -100,9 +124,47 @@ class $modify(MyPlayLayer, PlayLayer) {
         videoPlayer->setScale(1 / m_gameState.m_cameraZoom);
     }
 
-
+    // it's scheduled only if the pose estimation is enabled
     void updatePoseResolve(float) {
-        // todo:
+
+        auto f = m_fields.self();
+
+        auto currPose = Pose(f->m_poseEstimator->getPendingPoseResult().m_points);
+        
+        auto res = f->m_poseResolver.nextPose(getActiveModeAsIconType(), currPose);
+
+        if (res) {
+            PlayerAction action = res.value().second;
+            switch (action) {
+                case PlayerAction::Click: {
+                    handleButtonForce(true);
+                    scheduleOnce(schedule_selector(MyPlayLayer::delayedButtonUp), 0);
+                    break;
+                }
+                case PlayerAction::Hold: {
+                    handleButtonForce(true);
+                    break;
+                }
+                default: { // none
+                    handleButtonForce(false);
+                    break;
+                }
+            }
+        }
+    }
+
+
+    void delayedButtonUp(float) {
+        handleButtonForce(false);
+    }
+
+    void buttonSwitch(float) {
+        handleButtonForce(!m_fields->m_isButtonDown);
+    }
+
+
+    IconType getActiveModeAsIconType() {
+        return reinterpret_cast<MyGJBaseGameLayer*>(this)->m_fields->m_currentMode;
     }
 
 

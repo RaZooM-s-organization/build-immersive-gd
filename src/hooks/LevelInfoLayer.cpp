@@ -12,7 +12,7 @@ bool MyLevelInfoLayer::init(GJGameLevel* level, bool challenge) {
     playBtn->updateSprite();
     playBtn->setPositionX(-35);
 
-    auto myBtnSpr = CCSprite::createWithSpriteFrameName("GJ_playBtn2_001.png");
+    auto myBtnSpr = CCSprite::create("playManBtn.png"_spr);
     myBtnSpr->setScale(0.75);
     m_fields->m_myPlayBtn = CCMenuItemSpriteExtra::create(
         myBtnSpr, this, menu_selector(MyLevelInfoLayer::onOpenPopup)

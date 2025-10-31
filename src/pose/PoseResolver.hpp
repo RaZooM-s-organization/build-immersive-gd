@@ -6,6 +6,7 @@
 class PoseResolver {
 
     PoseId m_currentPoseId = PoseId::Any;
+    PoseId m_lastNotNonePoseId = PoseId::Any;
 
 public:
 
@@ -13,5 +14,7 @@ public:
     std::optional<std::pair<PoseId, PlayerAction>> nextPose(IconType mode, Pose pose);
 
     std::vector<std::pair<const char*, float>> getScores(IconType mode, Pose pose);
+
+    void reset();
 };
 

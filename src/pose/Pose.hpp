@@ -13,7 +13,26 @@ using namespace geode::prelude;
 
 enum class PoseId {
     Any,
-    Cube_ForearmsUp,
+
+    Cube_Up,
+
+    Ship_Up,
+    Ship_Down,
+
+    Ball_Flip,
+
+    Ufo_Up,
+    Ufo_Down,
+
+    Wave_Up,
+    Wave_Down,
+
+    Robot_Up,
+
+    Spider_Up,
+    Spider_Down,
+
+    Swing_Flip,
 
 };
 
