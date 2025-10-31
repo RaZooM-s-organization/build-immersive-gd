@@ -49,23 +49,22 @@ Pose::Pose(std::map<Bone, float> bones) {
 
 // returns 0..1
 float PosePrototype::getSimilarityRatio(const Pose &other) const {
-    
-    // todo: not working
-
-    auto sum2 = 0;
-    auto count = this->m_pose.m_bones.size();
+    float sum2 = 0;
+    int count = this->m_pose.m_bones.size();
 
     for (auto& [bone, thisAngle] : this->m_pose.m_bones) {
         auto it = other.m_bones.find(bone);
         if (it != other.m_bones.end()) {
             float otherAngle = it->second;
             float d = angleDiff(thisAngle, otherAngle);
-            d = d / std::numbers::pi; // normalize
+            d = d / std::numbers::pi; // normalize to 0..1
             sum2 += d * d;
+        } else {
+            sum2 += 0.5;
         }
     }
 
-    return std::sqrt(sum2 / count);
+    return 1 - std::sqrt(sum2 / count);
 }
 
 PlayerAction PosePrototype::transitionToPose(PoseId prev) const {

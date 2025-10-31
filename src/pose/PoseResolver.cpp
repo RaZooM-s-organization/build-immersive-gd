@@ -1,7 +1,5 @@
 #include "PoseResolver.hpp"
 
-#define SIMILARITY_THRESHOLD 0.6f
-
 
 std::optional<std::pair<PoseId, PlayerAction>> PoseResolver::nextPose(IconType mode, Pose pose) {
 
@@ -27,7 +25,7 @@ std::optional<std::pair<PoseId, PlayerAction>> PoseResolver::nextPose(IconType m
         }
     }
 
-    if (maxIdx == -1 || maxVal < SIMILARITY_THRESHOLD) {
+    if (maxIdx == -1 ||  maxVal < SIMILARITY_THRESHOLD) {
         if (m_currentPoseId != PoseId::Any) {
             m_currentPoseId = PoseId::Any;
             return {{PoseId::Any, PlayerAction::None}};

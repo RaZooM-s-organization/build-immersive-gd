@@ -119,6 +119,7 @@ void VideoPreviewPopup::setupCameraPreview() {
     m_mainLayer->addChildAtPosition(gmButtonsMenu, Anchor::Bottom, ccp(0, 75));
     gmButtonsMenu->setContentSize({215, 20});
     gmButtonsMenu->setLayout(RowLayout::create());
+    static_cast<CCMenuItemToggler*>(gmButtonsMenu->getChildByTag((int)IconType::Cube))->activate();
 
 
     // settings button
@@ -204,9 +205,10 @@ void VideoPreviewPopup::updateFpsLabels(float) {
     ).c_str());
 
     bool poseEn = ModSettings::get().m_poseEstimation.m_enable;
-    m_poseInfoLbl->setString(fmt::format("Pose control: {} | FPS: {}", 
+    m_poseInfoLbl->setString(fmt::format("Pose control: {} | FPS: {} | Threshold: {}", 
         poseEn ? "enabled" : "disabled",
-        m_poseFrame ? m_poseFrame->getFps() : 0
+        m_poseFrame ? m_poseFrame->getFps() : 0,
+        SIMILARITY_THRESHOLD
     ).c_str());
 }
 
@@ -216,9 +218,9 @@ void VideoPreviewPopup::updatePoseResolver(float) {
 
     auto currPose = Pose(m_poseEstimator->getPendingPoseResult().m_points);
 
-    auto res = m_poseResolver.nextPose(m_selectedGameMode.value(), currPose);
-
     updateScoresLabels(currPose);
+
+    auto res = m_poseResolver.nextPose(m_selectedGameMode.value(), currPose);
 
     if (res) {
         showPlayerClick(res.value().second);
@@ -234,10 +236,10 @@ void VideoPreviewPopup::updateScoresLabels(Pose pose) {
 
     for (auto s : scores) {
         auto lbl = CCLabelBMFont::create(
-            fmt::format("{}: {}", s.first, std::round(s.second * 100)).c_str(),
+            fmt::format("{}: {}", s.first, std::round(s.second * 100) / 100.f).c_str(),
             "bigFont.fnt"
         );
-        lbl->setScale(0.3);
+        lbl->setScale(0.5);
         m_dbgBase->addChild(lbl);
     }
 

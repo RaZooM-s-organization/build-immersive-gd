@@ -7,6 +7,9 @@ using namespace geode::prelude;
 
 #include <map>
 
+#define SIMILARITY_THRESHOLD 0.7f
+
+
 
 enum class PoseId {
     Any,
