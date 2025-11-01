@@ -60,7 +60,7 @@ This table shows poses that are close to ideal. (which can be seen by the *simil
     <img alt="gif is loading..." src="assets/general/ex_cube.gif"/>
   </td>
   <td>
-    todo_desc
+    Raise your forearms to jump
   </td>
 
   <tr>
@@ -69,10 +69,10 @@ This table shows poses that are close to ideal. (which can be seen by the *simil
     </td>
   </tr>
   <td>
-    todo_gif
+    <img alt="gif is loading..." src="assets/general/ex_ship.gif"/>
   </td>
   <td>
-    todo_desc
+    Raise your arms up to fly up, lower - to fly down
   </td>
 
   <tr>
@@ -81,7 +81,7 @@ This table shows poses that are close to ideal. (which can be seen by the *simil
     </td>
   </tr>
   <td>
-    todo_gif
+    <img alt="gif is loading..." src="assets/general/ex_ball.gif"/>
   </td>
   <td>
     This one is just like the cube
@@ -93,10 +93,10 @@ This table shows poses that are close to ideal. (which can be seen by the *simil
     </td>
   </tr>
   <td>
-    todo_gif
+    <img alt="gif is loading..." src="assets/general/ex_ufo.gif"/>
   </td>
   <td>
-    Imagine that you have wings and you flap them. *(Fun fact: Ufo is called 'bird' in the game files and code)*
+    Imagine that you have wings and you flap them. <i>(Fun fact: Ufo is called 'bird' in the game files and code)</i>
   </td>
 
   <tr>
@@ -105,10 +105,10 @@ This table shows poses that are close to ideal. (which can be seen by the *simil
     </td>
   </tr>
   <td>
-    todo_gif
+    <img alt="gif is loading..." src="assets/general/ex_wave.gif"/>
   </td>
   <td>
-    Pretty straightforward. 
+    Pretty straightforward
   </td>
 
   <tr>
@@ -117,7 +117,7 @@ This table shows poses that are close to ideal. (which can be seen by the *simil
     </td>
   </tr>
   <td>
-    todo_gif
+    <img alt="gif is loading..." src="assets/general/ex_robot.gif"/>
   </td>
   <td>
     This one is just like the cube and ball
@@ -129,10 +129,10 @@ This table shows poses that are close to ideal. (which can be seen by the *simil
     </td>
   </tr>
   <td>
-    todo_gif
+    <img alt="gif is loading..." src="assets/general/ex_spider.gif"/>
   </td>
   <td>
-    The hand movements are similar to the spider trajectory
+    The arm movements are similar to the spider trajectory
   </td>
 
   <tr>
@@ -141,7 +141,7 @@ This table shows poses that are close to ideal. (which can be seen by the *simil
     </td>
   </tr>
   <td>
-    todo_gif
+    <img alt="gif is loading..." src="assets/general/ex_swing.gif"/>
   </td>
   <td>
     This one is just like the cube and ball and robot
