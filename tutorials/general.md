@@ -1,12 +1,13 @@
-# What the heck
+# What the heck!?
 
 Video of me beating a level: [link](https://drive.google.com/file/d/1XcRoJc7gn7eMomx84zoVwuAHGEfKb2Xb/view?usp=sharing)
 
 # Tutorial
 
-## Initial setup
-
 In this tutorial, I will teach you how to use play GD with this mod. It may not be easy for you and may not work out at first, so **be prepared to put in some effort**.
+
+
+## Initial setup
 
 Assume you've installed the mod and launched the game (When you restart the game after installing the mod, you may get an error of missing dependency, which is a geode bug. If so, restart the game for the second time).
 
@@ -24,7 +25,8 @@ If you see an error instead of video, click on the '!' button and read what it t
 But assume everything is OK and you can see the video of yourself and the yellow lines that match your pose.
 
 
-**It's essential that mod detects both of your arms. Otherwise, try to make a video more contrasting: use better lighting or wear more contrasting clothes.**
+> [!IMPORTANT]
+> It's essential that mod detects both of your arms. Otherwise, try to make a video more contrasting: use better lighting or wear more contrasting clothes
 
 
 ## Playing with the mod
@@ -44,10 +46,13 @@ Select the game mode that you want to learn using the buttons under the video. R
 
 
 
-## Table
+## Table of poses
 
 
 This table shows poses that are close to ideal. (which can be seen by the *similarity coefficients*, which are close to 1)
+
+> [!NOTE]
+> There are `.gif`-s in this table. They may not load instantly. Wait a couple of seconds.
 
 
 <table>
