@@ -57,7 +57,7 @@ This table shows poses that are close to ideal. (which can be seen by the *simil
     </td>
   </tr>
   <td>
-    ![gif](assets/general/ex_cube.gif)
+    <img alt="gif is loading..." src="assets/general/ex_cube.gif"/>
   </td>
   <td>
     todo_desc
