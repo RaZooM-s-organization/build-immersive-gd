@@ -4,6 +4,8 @@ Video of me beating a level: [link](https://drive.google.com/file/d/1XcRoJc7gn7e
 
 # Tutorial
 
+- Русская версия этого туториала: [тут](general_ru.md)
+
 In this tutorial, I will teach you how to use play GD with this mod. It may not be easy for you and may not work out at first, so **be prepared to put in some effort**.
 
 
@@ -26,7 +28,9 @@ But assume everything is OK and you can see the video of yourself and the yellow
 
 
 > [!IMPORTANT]
-> It's essential that mod detects both of your arms. Otherwise, try to make a video more contrasting: use better lighting or wear more contrasting clothes
+> **It's essential that mod detects both of your arms**
+> 
+> **Otherwise, try to make a video more contrasting: use better lighting or wear more contrasting clothes**
 
 
 ## Playing with the mod
@@ -52,7 +56,7 @@ Select the game mode that you want to learn using the buttons under the video. R
 This table shows poses that are close to ideal. (which can be seen by the *similarity coefficients*, which are close to 1)
 
 > [!NOTE]
-> There are `.gif`-s in this table. They may not load instantly. Wait a couple of seconds.
+> There are gifs in this table. They may take couple of seconds to load.
 
 
 <table>
