@@ -199,7 +199,7 @@ void VideoPreviewPopup::setupCameraPreview() {
 
     m_mainLayer->addChild(m_dbgBase, 5);
 
-    schedule(schedule_selector(VideoPreviewPopup::updateFpsLabels), 0.5);
+    schedule(schedule_selector(VideoPreviewPopup::updateFpsLabels), 0.75);
     schedule(schedule_selector(VideoPreviewPopup::updatePoseResolver), 0.1);
     
 }
@@ -209,15 +209,16 @@ void VideoPreviewPopup::updateFpsLabels(float) {
     bool videoEn = ModSettings::get().m_videoOutput.m_enable;
     auto videoLayer = ModSettings::get().m_videoOutput.m_layer;
     m_videoInfoLbl->setString(fmt::format("Video: {} | Layer: {} | FPS: {:.1f}", 
-        videoEn ? "enabled" : "disabled",
+        videoEn ? "ON" : "OFF",
         videoEn ? enum2str(videoLayer) : "-",
         m_videoFrame ? m_videoFrame->getFps() : 0.f
     ).c_str());
 
     bool poseEn = ModSettings::get().m_poseEstimation.m_enable;
-    m_poseInfoLbl->setString(fmt::format("Pose control: {} | FPS: {:.1f}", 
-        poseEn ? "enabled" : "disabled",
-        m_poseFrame ? m_poseFrame->getFps() : 0.f
+    m_poseInfoLbl->setString(fmt::format("Pose control: {} | FPS: {:.1f} | Inference: {}ms", 
+        poseEn ? "ON" : "OFF",
+        m_poseFrame ? m_poseFrame->getFps() : 0.f,
+        m_poseFrame ? m_poseFrame->getLastInferenceTimeMs() : 0
     ).c_str());
 }
 

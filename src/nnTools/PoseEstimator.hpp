@@ -35,6 +35,8 @@ protected:
 
     FpsLimiter m_fpsLimiter;
 
+    int m_lastInferenceTimeMs;
+
     float* m_inputTensorData{};
     float* m_outputTensorData{};
     
@@ -47,7 +49,8 @@ public:
 
     PoseResult getPendingPoseResult();
     void getFrameSizeInPix(int *pixW, int *pixH);
-    float getFps();
+    float getFps() const;
+    int getLastInferenceTimeMs() const;
     
 protected:
 

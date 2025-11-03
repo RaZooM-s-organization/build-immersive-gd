@@ -134,6 +134,7 @@ PoseEstimator::PoseEstimator(std::shared_ptr<CameraMan> cameraman) {
 
     // todo: use allocator instead of std::makeshared...
 
+
     // pre-allocate memory
     m_inputTensorData = (float*) m_allocator.Alloc(s_inputTensorSize * sizeof(float));
     m_outputTensorData = (float*) m_allocator.Alloc(s_outputTensorSize * sizeof(float));
@@ -167,9 +168,15 @@ PoseResult PoseEstimator::getPendingPoseResult() {
 }
 
 
-float PoseEstimator::getFps() {
+float PoseEstimator::getFps() const {
     return m_fpsLimiter.getActualRefreshRate();
 }
+
+
+int PoseEstimator::getLastInferenceTimeMs() const {
+    return m_lastInferenceTimeMs;
+}
+
 
 
 void PoseEstimator::processVideoStream() {
@@ -218,12 +225,15 @@ bool PoseEstimator::processFrame() {
 
     const char* inputName = m_inputName.c_str();
     const char* outputName = m_outputName.c_str();
-    
-    // DbgTimer::start();
 
+    
+    auto dbgTmrBegin = std::chrono::steady_clock::now();
+    
     m_session.Run(Ort::RunOptions{}, &inputName, &inputTensor, 1, &outputName, &outputTensor, 1);
     
-    // DbgTimer::stop();
+    auto dbgTmrEnd = std::chrono::steady_clock::now();
+    m_lastInferenceTimeMs = std::chrono::duration_cast<std::chrono::milliseconds>(dbgTmrEnd - dbgTmrBegin).count();
+
     
     std::map<int, CCPoint> points;
     

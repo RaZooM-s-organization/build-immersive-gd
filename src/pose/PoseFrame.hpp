@@ -18,6 +18,7 @@ public:
     void draw() override;
     void visit() override;
 
-    float getFps();
+    float getFps() const;
+    int getLastInferenceTimeMs() const;
 
 };

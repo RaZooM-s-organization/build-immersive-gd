@@ -42,7 +42,7 @@ public:
 
         m_lastRefresh = duration_cast<nanoseconds>(now);
     }
-    float getActualRefreshRate() {
+    float getActualRefreshRate() const {
         using namespace std::chrono;
         if (m_frameTimes.size() == 0) return 1;
         float sum = 0;

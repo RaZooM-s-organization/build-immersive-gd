@@ -34,8 +34,13 @@ bool PoseFrame::init(std::shared_ptr<PoseEstimator> worker) {
 }
 
 
-float PoseFrame::getFps() {
+float PoseFrame::getFps() const {
     return m_poseEstimator->getFps();
+}
+
+
+int PoseFrame::getLastInferenceTimeMs() const {
+    return m_poseEstimator->getLastInferenceTimeMs();
 }
 
 

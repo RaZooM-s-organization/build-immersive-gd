@@ -173,7 +173,7 @@
 		"gpu-enable": {
 			"type": "bool",
 			"name": "GPU Acceleration",
-			"description": "This increases the performance of pose estimation, but can make the overall game performance worse (since the game engine also needs a GPU)\n<cg>If option is disabled, it runs on CPU</c>",
+			"description": "This increases the performance of pose estimation, but can make the overall game performance worse (since the game engine also needs a GPU)\n<cg>If option is disabled, it runs on CPU</c>\nAlso depending on your system it may not work at all :(",
 			"default": true
 		},
 		"gpu-device-id": {
@@ -184,7 +184,7 @@
 			"min": 0,
 			"max": 10,
 			"control": {
-				"arrows": false,
+				"arrows": true,
 				"big-arrows": false,
 				"slider": false,
 				"input": true

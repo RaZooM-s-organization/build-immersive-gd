@@ -78,7 +78,8 @@ class $modify(MyPlayLayer, PlayLayer) {
         if (ModSettings::get().m_poseEstimation.m_enable) { // control the game by pose
             f->m_poseEstimator = std::make_shared<PoseEstimator>(f->m_cameraMan);
 
-            if (ModSettings::get().m_poseEstimation.m_debugDraw) { // show pose debug draw
+            if (ModSettings::get().m_poseEstimation.m_debugDraw && ModSettings::get().m_videoOutput.m_enable) {
+                // show pose debug draw
                 auto poseFrame = PoseFrame::create(f->m_poseEstimator);
                 f->m_videoplayer->addFrame(poseFrame);
             }
