@@ -5,9 +5,10 @@
 
 
 class PoseFrame : public CCSprite {
-
+protected:
     std::shared_ptr<PoseEstimator> m_poseEstimator;
     float m_sizeMultiplier;
+    bool m_shouldFlipX;
 
 public:
 
@@ -15,7 +16,8 @@ public:
     bool init(std::shared_ptr<PoseEstimator> worker);
 
     void draw() override;
+    void visit() override;
 
-    int getFps();
+    float getFps();
 
 };

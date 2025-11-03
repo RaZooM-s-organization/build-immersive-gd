@@ -1,14 +1,11 @@
 {
 	"geode": "4.9.0",
 	"gd": {
-		"win": "2.2074",
-		"android": "2.2074",
-		"mac": "2.2074",
-		"ios": "2.2074"
+		"win": "2.2074"
 	},
 	"id": "razoom.s_pov",
 	"name": "RaZooM's POV",
-	"version": "v1.0.0-beta",
+	"version": "v1.0.0-beta.2",
 	"developer": "RaZooM",
 	"description": "Get inside the GD and control it with your body!",
 
@@ -69,6 +66,13 @@
 			"default": true,
 			"description": "Translate the video to the background of the level"
 		},
+		"video-output-mirror": {
+			"type": "bool",
+			"name": "Mirror video",
+			"default": true,
+			"description": "Mirror the output video, just like your phone's camera does",
+			"enable-if": "video-output-enable"
+		},
 		"video-output-fps-limit": {
 			"type": "int",
 			"name": "FPS Limit",
@@ -117,6 +121,21 @@
 			},
 			"enable-if": "pose-estimation-enable"
 		},
+		"pose-estimation-detection-threshold": {
+			"type": "float",
+			"name": "Detection Threshold",
+			"description": "Increase this value lower <cb>False Positives</c>. Decrease to lower <cb>False Negatives</c>.\nIn other words: '<co>How confident does a neural network have to be in order to accept a certain point of your body</c>'.\nI recommend keeping it between 0.3 and 0.6",
+			"default": 0.5,
+			"min": 0.1,
+			"max": 0.9,
+			"control": {
+				"arrows": true,
+				"big-arrows": false,
+				"slider": true,
+				"arrow-step": 0.1
+			},
+			"enable-if": "pose-estimation-enable"
+		},
 		"pose-estimation-video-output-fps-limit": {
 			"type": "int",
 			"name": "FPS Limit",
@@ -131,7 +150,6 @@
 			},
 			"enable-if": "pose-estimation-enable"
 		},
-		
 		"pose-estimation-debug-draw": {
 			"type": "bool",
 			"name": "Show the pose",
@@ -145,6 +163,33 @@
 			"description": "Disable keyboard/mouse inputs while playing a level",
 			"default": true,
 			"enable-if": "pose-estimation-enable"
+		},
+
+
+		"gpu-title": {
+			"type": "title",
+			"name": "GPU Options"
+		},
+		"gpu-enable": {
+			"type": "bool",
+			"name": "GPU Acceleration",
+			"description": "This increases the performance of pose estimation, but can make the overall game performance worse (since the game engine also needs a GPU)\n<cg>If option is disabled, it runs on CPU</c>",
+			"default": true
+		},
+		"gpu-device-id": {
+			"type": "int",
+			"name": "GPU device id",
+			"description": "If you have <co>more than 1 GPU</c>, you may want to change this number to change the GPU used by the mod.\n<cr>If you enter the number of GPU that doesn't exist, it will run on CPU</c>",
+			"default": 0,
+			"min": 0,
+			"max": 10,
+			"control": {
+				"arrows": false,
+				"big-arrows": false,
+				"slider": false,
+				"input": true
+			},
+			"enable-if": "gpu-enable"
 		}
 
 

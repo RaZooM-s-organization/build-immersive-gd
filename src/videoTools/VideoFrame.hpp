@@ -23,7 +23,7 @@ public:
 
     bool init(std::shared_ptr<CameraMan> cameraMan);
     void visit() override;
-    int getFps();
+    float getFps();
 
 };
 

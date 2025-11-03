@@ -22,6 +22,7 @@ struct ModSettings {
 
     struct {
         bool m_enable;
+        bool m_mirror;
         int m_fpsLimit;
         VideoOutputLayer m_layer;
     } m_videoOutput;
@@ -30,10 +31,16 @@ struct ModSettings {
         bool m_enable;
         int m_numOfThreads;
         int m_fpsLimit;
-        bool m_useGPU;
         bool m_debugDraw;
         bool m_disableInputs;
+        float m_threshold;
     } m_poseEstimation;
+
+
+    struct {
+        bool m_enable;
+        int m_deviceId;
+    } m_gpuSupport;
 
     // struct {
     //     bool m_enable;
@@ -55,6 +62,7 @@ struct ModSettings {
 
         // Video Output Settings
         m_videoOutput.m_enable = mod->getSettingValue<bool>("video-output-enable");
+        m_videoOutput.m_mirror = mod->getSettingValue<bool>("video-output-mirror");
         m_videoOutput.m_fpsLimit = mod->getSettingValue<int64_t>("video-output-fps-limit");
         m_videoOutput.m_layer = str2enum(mod->getSettingValue<std::string>("video-output-layer"));
 
@@ -62,10 +70,13 @@ struct ModSettings {
         m_poseEstimation.m_enable = mod->getSettingValue<bool>("pose-estimation-enable");
         m_poseEstimation.m_numOfThreads = mod->getSettingValue<int64_t>("pose-estimation-num-of-threads");
         m_poseEstimation.m_fpsLimit = mod->getSettingValue<int64_t>("pose-estimation-video-output-fps-limit");
-        // m_poseEstimation.m_useGPU = mod->getSettingValue<bool>("pose-estimation-use-gpu");
-        m_poseEstimation.m_useGPU = false;
         m_poseEstimation.m_debugDraw = mod->getSettingValue<bool>("pose-estimation-debug-draw");
         m_poseEstimation.m_disableInputs = mod->getSettingValue<bool>("pose-estimation-disable-inputs");
+        m_poseEstimation.m_threshold = mod->getSettingValue<double>("pose-estimation-detection-threshold");
+
+        // GPU settings (actually, DirectML settings)
+        m_gpuSupport.m_enable = mod->getSettingValue<bool>("gpu-enable");
+        m_gpuSupport.m_deviceId = mod->getSettingValue<int64_t>("gpu-device-id");
         
         // Green Screen Settings
         // m_greenScreen.m_enable = mod->getSettingValue<bool>("green-screen-enable");
@@ -144,15 +155,5 @@ struct ModGlobal {
 	},
 	"enable-if": "green-screen-enable"
 }
-
-
-"pose-estimation-use-gpu": {
-	"type": "bool",
-	"name": "Use GPU (only NVIDIA supported)",
-	"description": "Use GPU to speed up the neural network computations. \n <co>Don't enable if you don't have an NVIDIA GPU</c>\n<cg>But if you have it, I highly recommend enabling this option!</c>",
-	"default": false,
-	"enable-if": "pose-estimation-enable"
-},
-
 
 */

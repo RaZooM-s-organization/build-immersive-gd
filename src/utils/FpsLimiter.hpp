@@ -42,7 +42,7 @@ public:
 
         m_lastRefresh = duration_cast<nanoseconds>(now);
     }
-    int getActualRefreshRate() {
+    float getActualRefreshRate() {
         using namespace std::chrono;
         if (m_frameTimes.size() == 0) return 1;
         float sum = 0;
@@ -50,6 +50,6 @@ public:
             sum += duration<float>(delta).count();
         float avgDelta = sum / m_frameTimes.size();
         float fps = 1.0f / avgDelta;
-        return int(fps+0.5);
+        return fps;
     }
 };

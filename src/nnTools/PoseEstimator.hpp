@@ -34,6 +34,9 @@ protected:
     Ort::MemoryInfo m_memoryInfo{nullptr};
 
     FpsLimiter m_fpsLimiter;
+
+    float* m_inputTensorData{};
+    float* m_outputTensorData{};
     
 
 public:
@@ -44,7 +47,7 @@ public:
 
     PoseResult getPendingPoseResult();
     void getFrameSizeInPix(int *pixW, int *pixH);
-    int getFps();
+    float getFps();
     
 protected:
 

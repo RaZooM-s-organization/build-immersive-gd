@@ -1,4 +1,6 @@
 #include "PoseFrame.hpp"
+#include "../settings/Settings.hpp"
+
 
 PoseFrame* PoseFrame::create(std::shared_ptr<PoseEstimator> worker){
     auto ret = new PoseFrame;
@@ -25,12 +27,26 @@ bool PoseFrame::init(std::shared_ptr<PoseEstimator> worker) {
     }
     
     setContentSize(CCSizeMake(outWidth, outHeight) * m_sizeMultiplier);
+
+    m_shouldFlipX = ModSettings::get().m_videoOutput.m_mirror;
+
     return true;
 }
 
 
-int PoseFrame::getFps() {
+float PoseFrame::getFps() {
     return m_poseEstimator->getFps();
+}
+
+
+void PoseFrame::visit() {
+    if (m_shouldFlipX) {
+        setScaleX(-getScaleX());
+        CCSprite::visit();
+        setScaleX(-getScaleX());
+    } else {
+        CCSprite::visit();
+    }
 }
 
 

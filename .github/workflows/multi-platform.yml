@@ -40,7 +40,7 @@ jobs:
           mkdir -p downloads
           cd downloads
           curl "https://s3.ap-northeast-2.wasabisys.com/pinto-model-zoo/271_HRNet/resources.tar.gz" -o resources.tar.gz
-          curl "https://github.com/microsoft/onnxruntime/releases/download/v1.22.1/onnxruntime-win-x64-1.22.1.zip" -Lo onnxruntime-win64.zip
+          curl "https://github.com/microsoft/onnxruntime/releases/download/v1.22.1/Microsoft.ML.OnnxRuntime.DirectML.1.22.1.nupkg" -Lo onnxruntime-nupkg.zip
           curl "https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2025-09-30-13-19/ffmpeg-N-121271-g74115b017c-win64-gpl-shared.zip" -Lo ffmpeg.zip
           cd ..
 
@@ -49,16 +49,17 @@ jobs:
         run: |
           mkdir -p unzipped
           tar -zxvf ./downloads/resources.tar.gz -C ./unzipped
-          unzip ./downloads/onnxruntime-win64.zip -d ./unzipped
+          unzip ./downloads/onnxruntime-nupkg.zip -d ./unzipped/onnxruntime-dml
           unzip ./downloads/ffmpeg.zip -d ./unzipped
           ls -al unzipped
 
 
       - name: Move files
         run: |
-          mkdir lib
+          mkdir -p lib/onnxruntime
 
-          mv ./unzipped/onnxruntime-win-x64-* ./lib/onnxruntime
+          mv ./unzipped/onnxruntime-dml/build/native/include ./lib/onnxruntime/include
+          mv ./unzipped/onnxruntime-dml/runtimes/win-x64/native ./lib/onnxruntime/lib
 
           mv ./unzipped/ffmpeg-N-* ./lib/ffmpeg
 
@@ -82,7 +83,6 @@ jobs:
           mv ./lib/ffmpeg/bin/avutil*.dll ./build/resources/razoom.s_pov/binaries/win
           mv ./lib/ffmpeg/bin/swresample*.dll ./build/resources/razoom.s_pov/binaries/win
           mv ./lib/ffmpeg/bin/avfilter*.dll ./build/resources/razoom.s_pov/binaries/win
-
           mv ./lib/ffmpeg/bin/avformat*.dll ./build/resources/razoom.s_pov/binaries/win
 
 

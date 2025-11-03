@@ -30,8 +30,13 @@ bool VideoPreviewPopup::setup(int) {
 
     m_buttonMenu->addChildAtPosition(
         InfoAlertButton::create(
-            "Info", 
-            "todo", 
+            "What the heck!?", 
+            "In the top left corner of the video you can see the <cj>similarity coefficients</c> "
+            "of your pose and target pose. If coefficient is > <cr>0.7</c>, then your pose is "
+            "accepted. Target poses depend on the game mode\n"
+            "- Use game mode buttons to train a certain game mode\n"
+            "- Use settings button to open mod settings\n"
+            "<co>You can find more information and a list of target poses in the mod tutorial</c>",
             0.75
         ), 
         Anchor::TopRight, ccp(-18, -18)
@@ -203,17 +208,16 @@ void VideoPreviewPopup::setupCameraPreview() {
 void VideoPreviewPopup::updateFpsLabels(float) {
     bool videoEn = ModSettings::get().m_videoOutput.m_enable;
     auto videoLayer = ModSettings::get().m_videoOutput.m_layer;
-    m_videoInfoLbl->setString(fmt::format("Video: {} | Layer: {} | FPS: {}", 
+    m_videoInfoLbl->setString(fmt::format("Video: {} | Layer: {} | FPS: {:.1f}", 
         videoEn ? "enabled" : "disabled",
         videoEn ? enum2str(videoLayer) : "-",
-        m_videoFrame ? m_videoFrame->getFps() : 0
+        m_videoFrame ? m_videoFrame->getFps() : 0.f
     ).c_str());
 
     bool poseEn = ModSettings::get().m_poseEstimation.m_enable;
-    m_poseInfoLbl->setString(fmt::format("Pose control: {} | FPS: {} | Threshold: {}", 
+    m_poseInfoLbl->setString(fmt::format("Pose control: {} | FPS: {:.1f}", 
         poseEn ? "enabled" : "disabled",
-        m_poseFrame ? m_poseFrame->getFps() : 0,
-        SIMILARITY_THRESHOLD
+        m_poseFrame ? m_poseFrame->getFps() : 0.f
     ).c_str());
 }
 

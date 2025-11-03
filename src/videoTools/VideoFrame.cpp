@@ -26,7 +26,7 @@ VideoFrame::~VideoFrame() {
 }
 
 
-int VideoFrame::getFps() {
+float VideoFrame::getFps() {
     return m_fpsLimiter.getActualRefreshRate();
 }
 
@@ -68,6 +68,8 @@ bool VideoFrame::init(std::shared_ptr<CameraMan> cameraMan) {
     setContentSize(CCSizeMake(outWidth, outHeight) * sizeMultiplier);
 
     m_fpsLimiter.setFpsLimit(ModSettings::get().m_videoOutput.m_fpsLimit);
+
+    setFlipX(ModSettings::get().m_videoOutput.m_mirror);
 
     return true;
 }

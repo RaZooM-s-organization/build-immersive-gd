@@ -6,7 +6,7 @@
 - Control the game character with your pose and movements
 
 
-[What the heck!?](https://github.com/RazoomGD/geode-modtober-25-mod/blob/ffmpeg-with-camera-variant/tutorials/general.md)
+[What the heck!?](https://github.com/RazoomGD/geode-modtober-25-mod/blob/ffmpeg-with-camera-variant/tutorials/general.md)  <-- tutorial
 
 ___
 
@@ -26,7 +26,7 @@ ___
 
 ## Upcoming features (the highest priorities)
 
-- Support for GPU to speed up pose estimation
+- Support for GPU to speed up pose estimation (DONE)
 - Ability to add your own poses and edit existing ones
 - Green screen support
 - Less stupid name & logo
