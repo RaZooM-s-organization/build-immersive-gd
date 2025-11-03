@@ -27,7 +27,7 @@ jobs:
           path: |
             downloads/resources.tar.gz
             downloads/ffmpeg.zip
-            downloads/onnxruntime-win64.zip
+            downloads/onnxruntime-nupkg.zip
 
           key: my_constant_key_v1
 
