@@ -22,7 +22,6 @@ VideoFrame* VideoFrame::create(std::shared_ptr<CameraMan> cameraMan) {
 
 VideoFrame::~VideoFrame() {
     CC_SAFE_RELEASE(m_ccTexture);
-    log::info("Frame cleared");
 }
 
 

@@ -173,13 +173,13 @@
 		"gpu-enable": {
 			"type": "bool",
 			"name": "GPU Acceleration",
-			"description": "This increases the performance of pose estimation, but can make the overall game performance worse (since the game engine also needs a GPU)\n<cg>If option is disabled, it runs on CPU</c>\nAlso depending on your system it may not work at all :(",
+			"description": "This increases the performance of pose estimation, but can make the overall game performance worse (since the game engine also needs a GPU)\n<cg>If option is disabled, it runs on CPU</c>\nAlso depending on your system it may not work at all :(\nRead [this](https://github.com/RazoomGD/geode-modtober-25-mod/blob/ffmpeg-with-camera-variant/tutorials/directml_troubleshooting.md) for troubleshooting",
 			"default": true
 		},
 		"gpu-device-id": {
 			"type": "int",
 			"name": "GPU device id",
-			"description": "If you have <co>more than 1 GPU</c>, you may want to change this number to change the GPU used by the mod.\n<cr>If you enter the number of GPU that doesn't exist, it will run on CPU</c>",
+			"description": "If you have <co>more than 1 GPU</c>, you may want to change this number to change the GPU used by the mod.\n<cr>If you enter the number of GPU that doesn't exist, it will run on CPU and the error will be displayed</c>",
 			"default": 0,
 			"min": 0,
 			"max": 10,

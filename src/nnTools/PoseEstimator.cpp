@@ -122,17 +122,26 @@ PoseEstimator::PoseEstimator(std::shared_ptr<CameraMan> cameraman) {
     m_sessionOptions.EnableMemPattern(); // optimize mem allocation
 
     if (useDirectML) {
-        // todo: check that the onnx runtime lib is in resources
-        OrtSessionOptionsAppendExecutionProvider_DML(m_sessionOptions, deviceId);
+
+        OrtStatusPtr dmlStatus = OrtSessionOptionsAppendExecutionProvider_DML(
+            m_sessionOptions, deviceId
+        );
+
+        if (dmlStatus != nullptr) {
+            auto st = Ort::Status(dmlStatus);
+            std::string err = fmt::format("Not able to use DirectML (Code: {}). {}",
+                (int)st.GetErrorCode(), st.GetErrorMessage()
+            );
+            log::error("{}", err);
+            m_errors += err;
+        }
     }
     
     m_memoryInfo = Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault);
     
     m_session = Ort::Session(m_env, m_modelFilepath.c_str(), m_sessionOptions);
-    
-    m_allocator = Ort::Allocator(m_session, m_memoryInfo);
 
-    // todo: use allocator instead of std::makeshared...
+    m_allocator = Ort::Allocator(m_session, m_memoryInfo);
 
 
     // pre-allocate memory
@@ -156,7 +165,6 @@ PoseEstimator::~PoseEstimator() {
     }
     if (m_inputTensorData) m_allocator.Free(m_inputTensorData);
     if (m_outputTensorData) m_allocator.Free(m_outputTensorData);
-    log::info("Estimator cleared");
 }
 
 
@@ -172,11 +180,17 @@ float PoseEstimator::getFps() const {
     return m_fpsLimiter.getActualRefreshRate();
 }
 
-
 int PoseEstimator::getLastInferenceTimeMs() const {
     return m_lastInferenceTimeMs;
 }
 
+std::string PoseEstimator::getErrors() const {
+    return m_errors;
+}
+
+void PoseEstimator::getFrameSizeInPix(int *pixW, int *pixH) {
+    m_cameraMan->getFrameSizeInPix(pixW, pixH);
+}
 
 
 void PoseEstimator::processVideoStream() {
@@ -190,11 +204,6 @@ void PoseEstimator::processVideoStream() {
         }
         std::this_thread::yield();
     }
-}
-
-
-void PoseEstimator::getFrameSizeInPix(int *pixW, int *pixH) {
-    m_cameraMan->getFrameSizeInPix(pixW, pixH);
 }
 
 
@@ -262,8 +271,8 @@ bool PoseEstimator::processFrame() {
             values.push_back(maxVal);
         }
     }
-    float sum=0;
-    for(float v:values) sum+=v;
+    // float sum=0;
+    // for(float v:values) sum+=v;
     // log::info("AVG: {}",sum/values.size());
 
 

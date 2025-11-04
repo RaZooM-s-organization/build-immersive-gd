@@ -22,6 +22,8 @@ protected:
     CCLabelBMFont* m_clickLbl;
     CCNodeRGBA* m_dbgBase;
 
+    std::string m_optionalErrors{};
+
     std::optional<IconType> m_selectedGameMode;
     PoseResolver m_poseResolver;
 
@@ -35,6 +37,7 @@ public:
     void onModeButton(CCObject* obj);
     void onPlayButton(CCObject* obj);
     void onCapturePoseButton(CCObject* obj);
+    void onOptionalErrorButton(CCObject* obj);
 
     void updateFpsLabels(float);
     void updatePoseResolver(float);

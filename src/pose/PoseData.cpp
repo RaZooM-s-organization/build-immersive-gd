@@ -53,7 +53,7 @@ static const std::map<IconType, std::vector<PosePrototype>> poseData = {
         IconType::Ball, {
             PosePrototype {
                 PoseId::Ball_Flip,
-                "ball.jump",
+                "ball.flip",
                 Pose {{ 
                     {Pose::Bone::Bone_5_7, 5.300392},
                     {Pose::Bone::Bone_7_9, 1.119343},

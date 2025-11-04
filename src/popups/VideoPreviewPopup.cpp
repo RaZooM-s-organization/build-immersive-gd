@@ -102,6 +102,12 @@ void VideoPreviewPopup::setupCameraPreview() {
     m_mainLayer->addChild(bg);
     bg->setPosition(m_videoplayer->getPosition());
     bg->setZOrder(0);
+
+
+    // Errors
+    if (m_poseEstimator) {
+        m_optionalErrors += m_poseEstimator->getErrors();
+    }
     
 
     // gameMode buttons
@@ -132,10 +138,10 @@ void VideoPreviewPopup::setupCameraPreview() {
 
 
     // settings button
-    auto spr = CCSprite::createWithSpriteFrameName("GJ_optionsBtn_001.png");
-    spr->setScale(0.6f);
-    auto btn = CCMenuItemSpriteExtra::create(spr, this, menu_selector(VideoPreviewPopup::onModSettings));
-    m_buttonMenu->addChildAtPosition(btn, Anchor::Left, ccp(30, 0));
+    auto settingsSpr = CCSprite::createWithSpriteFrameName("GJ_optionsBtn_001.png");
+    settingsSpr->setScale(0.6f);
+    auto settingsBtn = CCMenuItemSpriteExtra::create(settingsSpr, this, menu_selector(VideoPreviewPopup::onModSettings));
+    m_buttonMenu->addChildAtPosition(settingsBtn, Anchor::Left, ccp(30, 0));
 
     // play button
     auto playBtnSpr = CCSprite::createWithSpriteFrameName("GJ_playBtn2_001.png");
@@ -155,6 +161,16 @@ void VideoPreviewPopup::setupCameraPreview() {
     );
     m_buttonMenu->addChildAtPosition(capturePoseButton, Anchor::Left, ccp(30, -30));
     capturePoseButton->setVisible(false);
+
+
+    // Optional error button
+    auto optionalErrSpr = CCSprite::createWithSpriteFrameName("GJ_reportBtn_001.png");
+    optionalErrSpr->setScale(0.652);
+    auto optionalErrButton = CCMenuItemSpriteExtra::create(
+        optionalErrSpr, this, menu_selector(VideoPreviewPopup::onOptionalErrorButton)
+    );
+    m_buttonMenu->addChildAtPosition(optionalErrButton, Anchor::Left, ccp(30, 40));
+    if (m_optionalErrors.empty()) optionalErrButton->setVisible(false);
 
 
     // FPS labels
@@ -258,11 +274,14 @@ void VideoPreviewPopup::updateScoresLabels(Pose pose) {
 }
 
 
-
-
 void VideoPreviewPopup::onCapturePoseButton(CCObject* obj) {
     showPlayerClick();
     scheduleOnce(schedule_selector(VideoPreviewPopup::debugPrintCurrentPose), 5);
+}
+
+
+void VideoPreviewPopup::onOptionalErrorButton(CCObject* obj) {
+    createQuickPopup("Errors", m_optionalErrors, "ok", nullptr, 500, nullptr);
 }
 
 
@@ -297,9 +316,6 @@ void VideoPreviewPopup::debugPrintCurrentPose(float) {
     auto currPose = Pose(m_poseEstimator->getPendingPoseResult().m_points);
     currPose.debugPrint();
 }
-
-
-
 
 
 void VideoPreviewPopup::onClose(CCObject* obj) {

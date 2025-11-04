@@ -33,6 +33,8 @@ protected:
     Ort::Allocator m_allocator{nullptr};
     Ort::MemoryInfo m_memoryInfo{nullptr};
 
+    std::string m_errors{};
+
     FpsLimiter m_fpsLimiter;
 
     int m_lastInferenceTimeMs;
@@ -48,9 +50,11 @@ public:
     ~PoseEstimator();
 
     PoseResult getPendingPoseResult();
+
     void getFrameSizeInPix(int *pixW, int *pixH);
     float getFps() const;
     int getLastInferenceTimeMs() const;
+    std::string getErrors() const;
     
 protected:
 
