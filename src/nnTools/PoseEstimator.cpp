@@ -96,8 +96,7 @@ void resizeConvertAndSplitImageAllInOne(const RGB_888 *src, float *dst, int srcH
 
 inline std::wstring getModelPathWstring() {
     auto path = Mod::get()->getResourcesDir().append("hrnet_coco_w32_256x192.onnx");
-    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-    return converter.from_bytes(path.string().c_str());
+    return path.wstring();
 }
 
 
