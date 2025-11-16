@@ -1,6 +1,8 @@
-# What the heck!?
+# Tutorial
 
-Video of me beating a very hard level Retray: [link](https://drive.google.com/file/d/1qoEGxUMsHt6eoXd03BJ86g8IeRKuHhv-/view?usp=drive_link) (80 attempts)
+Video of me beating Retray: [link](https://drive.google.com/file/d/1qoEGxUMsHt6eoXd03BJ86g8IeRKuHhv-/view?usp=drive_link) (80 attempts)
+
+Video of me beating a level with all game modes: [link](https://drive.google.com/file/d/19VSQVsbXWYqP20PDQV_6o5zIUcVdgdtg/view?usp=sharing)
 
 # Tutorial
 
@@ -30,7 +32,7 @@ But assume everything is OK and you can see the video of yourself and the yellow
 > [!IMPORTANT]
 > **It's essential that mod detects both of your arms**
 > 
-> **Otherwise, try to make a video more contrasting: use better lighting or wear more contrasting clothes**
+> Otherwise, try to make a video more contrasting: use better lighting or wear more contrasting clothes. Or decrease the `Detection Threshold` in mod settings
 
 
 ## Playing with the mod

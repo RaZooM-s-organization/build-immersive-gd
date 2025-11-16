@@ -1,5 +1,6 @@
 # 1.0.0-beta.3
 - someone REJECTED this mod without a good reason
+- rebranding
 
 # 1.0.0-beta.2
 - Support for GPU acceleration
